@@ -31,12 +31,13 @@ var
 
 begin
   // Initialize SDL2 and create a basic window with it for BGFX rendering.
+  // TODO: Move this and all of the other SDL2 stuff into a unit that can be reused by multiple example programs.
   SDL2LIB_Initialize();
 
   if SDL_Init(SDL_INIT_VIDEO) < 0 then begin
     WriteLn(Format('SDL2 initialization error: %s\n', [SDL_GetError()]));
   end else begin
-    Window := SDL_CreateWindow('PasBGFX Hello World', SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
+    Window := SDL_CreateWindow('PasBGFX Hello World', SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Width, Height, SDL_WINDOW_SHOWN);
     if Window = nil then
       WriteLn(Format('SDL2 window creation error: %s\n', [SDL_GetError()]));
   end;
@@ -46,12 +47,13 @@ begin
     Halt(1);
 
   // Some platform-specific window boilerplate.
-  // TODO: Add an ifdef here for OSX also...
   {$if Defined(Windows)}
     PD.nwh := Pointer(WMI.win.window);
   {$elseif Defined(Linux)}
-    PD.ndt = WMI.info.x11.display;
-    PD.nwh = Pointer(WMI.info.x11.window);
+    PD.ndt := WMI.info.x11.display;
+    PD.nwh := Pointer(WMI.info.x11.window);
+  {$elseif Defined(Darwin)}
+    PD.nwh := Pointer(WMI.info.cocoa.window);
   {$endif}
 
   // Tell BGFX about the platform and window, then initialize it.
