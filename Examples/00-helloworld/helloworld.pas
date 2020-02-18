@@ -30,7 +30,7 @@ var
   Event: TSDL_Event;
 
 begin
-  //Initialize SDL2 and create a basic window with it for BGFX rendering.
+  // Initialize SDL2 and create a basic window with it for BGFX rendering.
   SDL2LIB_Initialize();
 
   if SDL_Init(SDL_INIT_VIDEO) < 0 then begin
@@ -54,7 +54,7 @@ begin
     PD.nwh = Pointer(WMI.info.x11.window);
   {$endif}
 
-  // Tell bgfx about the platform and window, then initialize it.
+  // Tell BGFX about the platform and window, then initialize it.
   bgfx_set_platform_data(@PD);
 
   bgfx_init_ctor(@Init);
@@ -68,7 +68,7 @@ begin
   // Set the default "background" color.
   bgfx_set_view_clear(0, BGFX_CLEAR_COLOR or BGFX_CLEAR_DEPTH, $303030ff, 1.0, 0);
 
-  // Initialize our SDL event record.
+  // Initialize our SDL2 event record.
   Event := Default(TSDL_Event);
 
   // Start our rendering loop.

@@ -1,5 +1,3 @@
-unit BGFX;
-
 (*
   Copyright 2020 Akira13641
   License: http://www.opensource.org/licenses/BSD-2-Clause
@@ -8,6 +6,8 @@ unit BGFX;
   and was partially automatically generated with Chet:
   https://github.com/neslib/Chet
 *)
+
+unit BGFX;
 
 {$MINENUMSIZE 4}
 
