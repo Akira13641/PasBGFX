@@ -16,7 +16,7 @@ interface
 const
   {$if Defined(Windows)}
     LIB_BGFX = 'bgfx.dll';
-  {$elseif Defined(Linux}
+  {$elseif Defined(Linux)}
     LIB_BGFX = 'bgfx.so';
   {$elseif Defined(MacOS)}
     LIB_BGFX = 'bgfx.dylib';
