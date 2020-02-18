@@ -1026,10 +1026,10 @@ type
   (* Renderer capabilities. *)
   bgfx_caps_s = record
     rendererType: bgfx_renderer_type_t;
-    (* Supported functionality.
-
-       See BGFX_CAPS_* flags at https://bkaradzic.github.io/bgfx/bgfx.html#available-caps *)
+    (* Renderer backend type. See: `bgfx::RendererType` *)
     supported: UInt64;
+    (* Supported functionality.
+       See BGFX_CAPS_* flags at https://bkaradzic.github.io/bgfx/bgfx.html#available-caps *)
     vendorId: UInt16;
     (* Selected GPU vendor PCI id. *)
     deviceId: UInt16;
@@ -1043,6 +1043,7 @@ type
     gpu: array [0..3] of bgfx_caps_gpu_t;
     (* Enumerated GPUs. *)
     limits: bgfx_caps_limits_t;
+    formats: array [0..84] of UInt16;
     (* Supported texture format capabilities flags:
        - `BGFX_CAPS_FORMAT_TEXTURE_NONE` - Texture format is not supported.
        - `BGFX_CAPS_FORMAT_TEXTURE_2D` - Texture format is supported.
@@ -1064,7 +1065,6 @@ type
        - `BGFX_CAPS_FORMAT_TEXTURE_MSAA` - Texture can be sampled as MSAA.
        - `BGFX_CAPS_FORMAT_TEXTURE_MIP_AUTOGEN` - Texture format supports auto-generated
        mips. *)
-    formats: array [0..84] of UInt16;
   end;
 
   (* Renderer capabilities. *)
@@ -1076,6 +1076,7 @@ type
     caps: Pbgfx_caps_t;
     (* Renderer capabilities. *)
     context: Pointer;
+    (* GL context, or D3D device. *)
   end;
 
   (* Internal data. *)
@@ -1093,6 +1094,7 @@ type
     backBuffer: Pointer;
     (* GL backbuffer, or D3D render target view. *)
     backBufferDS: Pointer;
+    (* Backbuffer depth/stencil. *)
   end;
 
   (* Platform data. *)
