@@ -15,11 +15,11 @@ interface
 
 const
   {$if Defined(Windows)}
-    LIB_BGFX = 'bgfx.dll';
+    LIB_BGFX = 'bgfx-shared-libRelease.dll';
   {$elseif Defined(Linux)}
-    LIB_BGFX = 'bgfx.so';
-  {$elseif Defined(MacOS)}
-    LIB_BGFX = 'bgfx.dylib';
+    LIB_BGFX = 'libbgfx-shared-libRelease.so';
+  {$elseif Defined(Darwin)}
+    LIB_BGFX = 'libbgfx-shared-libRelease.dylib';
   {$endif}
 
 const
