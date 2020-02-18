@@ -90,7 +90,7 @@ begin
       bgfx_dbg_text_clear(0, False);
       bgfx_dbg_text_image(Max(Width div 2 div 8, 20) - 20, Max(Height div 2 div 16, 6) - 6, 40, 12, @LogoData[0], 160);
 
-      bgfx_dbg_text_printf(0, 1, $0f, 'Color can be changed with ANSI ' + #27'[9;me'#27'[10;ms'#27'[11;mc'#27'[12;ma'#27'[13;mp'#27'[14;me'#27'[0m' + ' code too.');
+      bgfx_dbg_text_printf(0, 1, $0f, 'Color can be changed with ANSI ' + #27'[9;me'#27'[10;ms'#27'[11;mc'#27'[12;ma'#27'[13;mp'#27'[14;me'#27'[0m' + ' codes too.');
 
       bgfx_dbg_text_printf(80, 1, $0f, #27'[;0m    '#27'[;1m    '#27'[; 2m    '#27'[; 3m    '#27'[; 4m    '#27'[; 5m    '#27'[; 6m    '#27'[; 7m    '#27'[0m');
       bgfx_dbg_text_printf(80, 2, $0f, #27'[;8m    '#27'[;9m    '#27'[;10m    '#27'[;11m    '#27'[;12m    '#27'[;13m    '#27'[;14m    '#27'[;15m    '#27'[0m');
