@@ -33,6 +33,7 @@ type
     DEBUG = BGFX_DEBUG_TEXT;
     RESET = BGFX_RESET_VSYNC;
   public class var
+    Title: PAnsiChar;
     Width, Height: UInt16;
     ClearColor: UInt32;
     PlatformData: bgfx_platform_data_t;
@@ -43,7 +44,8 @@ type
     Event: TSDL_Event;
   public
     // Creates an SDL2 window and initializes BGFX in a fully platform-agnostic way.
-    class procedure Initialize(const AWidth: UInt16 = DEFAULT_WIDTH;
+    class procedure Initialize(const ATitle: PAnsiChar;
+                               const AWidth: UInt16 = DEFAULT_WIDTH;
                                const AHeight: UInt16 = DEFAULT_HEIGHT;
                                const AClearColor: UInt32 = DEFAULT_CLEAR_COLOR); static;
     // Calls `RenderProc` in a loop until receiving an `SDL_QUITEV` message in `Event`.
@@ -54,11 +56,13 @@ type
 
 implementation
 
-class procedure TExampleRunner.Initialize(const AWidth: UInt16 = DEFAULT_WIDTH;
+class procedure TExampleRunner.Initialize(const ATitle: PAnsiChar;
+                                          const AWidth: UInt16 = DEFAULT_WIDTH;
                                           const AHeight: UInt16 = DEFAULT_HEIGHT;
                                           const AClearColor: UInt32 = DEFAULT_CLEAR_COLOR);
 begin
   // Assign the user-provided parameters to our internal window state variables.
+  Title := ATitle;
   Width := AWidth;
   Height := AHeight;
   ClearColor := AClearColor;
@@ -69,7 +73,7 @@ begin
   if SDL_Init(SDL_INIT_VIDEO) < 0 then begin
     WriteLn(Format('SDL2 initialization error: %s'#10, [SDL_GetError()]));
   end else begin
-    Window := SDL_CreateWindow('PasBGFX Hello World', SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Width, Height, SDL_WINDOW_SHOWN);
+    Window := SDL_CreateWindow(Title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Width, Height, SDL_WINDOW_SHOWN);
     if Window = nil then
       WriteLn(Format('SDL2 window creation error: %s'#10, [SDL_GetError()]));
   end;
