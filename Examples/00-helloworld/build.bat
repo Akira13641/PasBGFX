@@ -1,1 +1,2 @@
-fpc -B -O3 -Ci- -Cr- -g- -XXs helloworld.pas
+md .\lib^
+fpc -B -Ci- -Cr- -FU.\lib -g- -O3 -XXs helloworld.pas

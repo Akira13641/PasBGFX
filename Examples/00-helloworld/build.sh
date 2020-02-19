@@ -1,1 +1,1 @@
-fpc -B -O3 -Ci- -Cr- -g- -XXs ./helloworld.pas
+mkdir -p ./lib && fpc.exe -B -Ci- -Cr- -FU./lib -g- -O3 -XXs ./helloworld.pas
