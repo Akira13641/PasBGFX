@@ -20,8 +20,7 @@ uses
   BGFX in '../../Source/BGFX.pas';
 
 type
-  // Type alias for a basic parameterless rendering procedure
-  // intended to be called in a loop.
+  // Type alias for a basic parameterless rendering procedure intended to be called in a loop.
   TRenderProc = procedure;
 
   // A basic cross-platform static example runner.
