@@ -2214,12 +2214,12 @@ function bgfx_vertex_layout_add(_this: Pbgfx_vertex_layout_t; _attrib: bgfx_attr
    @param(_type [out] Element type.)
    @param(_normalized [out] Attribute is normalized.)
    @param(_asInt [out] Attribute is packed as int.) *)
-procedure bgfx_vertex_layout_decode(_this: Pbgfx_vertex_layout_t; _attrib: bgfx_attrib_t; _num: PUInt8; _type: Pbgfx_attrib_type_t; _normalized: PBoolean; _asInt: PBoolean); cdecl;
+procedure bgfx_vertex_layout_decode(const _this: Pbgfx_vertex_layout_t; _attrib: bgfx_attrib_t; _num: PUInt8; _type: Pbgfx_attrib_type_t; _normalized: PBoolean; _asInt: PBoolean); cdecl;
   external BGFX_LIB_NAME name 'bgfx_vertex_layout_decode';
 
 (* Returns true if VertexLayout contains attribute.
    @param(_attrib [in] Attribute semantics. See: `bgfx::Attrib`) *)
-function bgfx_vertex_layout_has(_this: Pbgfx_vertex_layout_t; _attrib: bgfx_attrib_t): Boolean; cdecl;
+function bgfx_vertex_layout_has(const _this: Pbgfx_vertex_layout_t; _attrib: bgfx_attrib_t): Boolean; cdecl;
   external BGFX_LIB_NAME name 'bgfx_vertex_layout_has';
 
 (* Skip `_num` bytes in vertex stream.
@@ -2238,7 +2238,7 @@ procedure bgfx_vertex_layout_end(_this: Pbgfx_vertex_layout_t); cdecl;
    @param(_layout [in] Vertex stream layout.)
    @param(_data [in] Destination vertex stream where data will be packed.)
    @param(_index [in] Vertex index that will be modified.) *)
-procedure bgfx_vertex_pack(_input: PSingle; _inputNormalized: Boolean; _attr: bgfx_attrib_t; _layout: Pbgfx_vertex_layout_t; _data: Pointer; _index: UInt32); cdecl;
+procedure bgfx_vertex_pack(_input: PSingle; _inputNormalized: Boolean; _attr: bgfx_attrib_t; const _layout: Pbgfx_vertex_layout_t; _data: Pointer; _index: UInt32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_vertex_pack';
 
 (* Unpack vertex attribute from vertex stream format.
@@ -2247,7 +2247,7 @@ procedure bgfx_vertex_pack(_input: PSingle; _inputNormalized: Boolean; _attr: bg
    @param(_layout [in] Vertex stream layout.)
    @param(_data [in] Source vertex stream from where data will be unpacked.)
    @param(_index [in] Vertex index that will be unpacked.) *)
-procedure bgfx_vertex_unpack(_output: PSingle; _attr: bgfx_attrib_t; _layout: Pbgfx_vertex_layout_t; _data: Pointer; _index: UInt32); cdecl;
+procedure bgfx_vertex_unpack(_output: PSingle; _attr: bgfx_attrib_t; const _layout: Pbgfx_vertex_layout_t; const _data: Pointer; _index: UInt32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_vertex_unpack';
 
 (* Converts vertex stream data from one vertex stream format to another.
@@ -2256,7 +2256,7 @@ procedure bgfx_vertex_unpack(_output: PSingle; _attr: bgfx_attrib_t; _layout: Pb
    @param(_srcLayout [in] Source vertex stream layout.)
    @param(_srcData [in] Source vertex stream data.)
    @param(_num [in] Number of vertices to convert from source to destination.) *)
-procedure bgfx_vertex_convert(_dstLayout: Pbgfx_vertex_layout_t; _dstData: Pointer; _srcLayout: Pbgfx_vertex_layout_t; _srcData: Pointer; _num: UInt32); cdecl;
+procedure bgfx_vertex_convert(const _dstLayout: Pbgfx_vertex_layout_t; _dstData: Pointer; const _srcLayout: Pbgfx_vertex_layout_t; const _srcData: Pointer; _num: UInt32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_vertex_convert';
 
 (* Weld vertices.
@@ -2267,7 +2267,7 @@ procedure bgfx_vertex_convert(_dstLayout: Pbgfx_vertex_layout_t; _dstData: Point
    @param(_num [in] Number of vertices in vertex stream.)
    @param(_epsilon [in] Error tolerance for vertex position comparison.)
    @returns(Number of unique vertices after vertex welding.) *)
-function bgfx_weld_vertices(_output: PUInt16; _layout: Pbgfx_vertex_layout_t; _data: Pointer; _num: UInt16; _epsilon: Single): UInt16; cdecl;
+function bgfx_weld_vertices(_output: PUInt16; const _layout: Pbgfx_vertex_layout_t; const _data: Pointer; _num: UInt16; _epsilon: Single): UInt16; cdecl;
   external BGFX_LIB_NAME name 'bgfx_weld_vertices';
 
 (* Convert index buffer for use with different primitive topologies.
@@ -2281,7 +2281,7 @@ function bgfx_weld_vertices(_output: PUInt16; _layout: Pbgfx_vertex_layout_t; _d
    @param(_numIndices [in] Number of input indices.)
    @param(_index32 [in] Set to `true` if input indices are 32-bit.)
    @returns(Number of output indices after conversion.) *)
-function bgfx_topology_convert(_conversion: bgfx_topology_convert_t; _dst: Pointer; _dstSize: UInt32; _indices: Pointer; _numIndices: UInt32; _index32: Boolean): UInt32; cdecl;
+function bgfx_topology_convert(_conversion: bgfx_topology_convert_t; _dst: Pointer; _dstSize: UInt32; const _indices: Pointer; _numIndices: UInt32; _index32: Boolean): UInt32; cdecl;
   external BGFX_LIB_NAME name 'bgfx_topology_convert';
 
 (* Sort indices.
@@ -2299,7 +2299,7 @@ function bgfx_topology_convert(_conversion: bgfx_topology_convert_t; _dst: Point
    @param(_indices [in] Source indices.)
    @param(_numIndices [in] Number of input indices.)
    @param(_index32 [in] Set to `true` if input indices are 32-bit.) *)
-procedure bgfx_topology_sort_tri_list(_sort: bgfx_topology_sort_t; _dst: Pointer; _dstSize: UInt32; _dir: PSingle; _pos: PSingle; _vertices: Pointer; _stride: UInt32; _indices: Pointer; _numIndices: UInt32; _index32: Boolean); cdecl;
+procedure bgfx_topology_sort_tri_list(_sort: bgfx_topology_sort_t; _dst: Pointer; _dstSize: UInt32; _dir: PSingle; _pos: PSingle; const _vertices: Pointer; _stride: UInt32; const _indices: Pointer; _numIndices: UInt32; _index32: Boolean); cdecl;
   external BGFX_LIB_NAME name 'bgfx_topology_sort_tri_list';
 
 (* Returns supported backend API renderers.
@@ -2321,7 +2321,7 @@ procedure bgfx_init_ctor(_init: Pbgfx_init_t); cdecl;
 (* Initialize bgfx library.
    @param(_init [in] Initialization parameters. See: `bgfx::Init` for more info.)
    @returns(`true` if initialization was successful.) *)
-function bgfx_init(_init: Pbgfx_init_t): Boolean; cdecl;
+function bgfx_init(const _init: Pbgfx_init_t): Boolean; cdecl;
   external BGFX_LIB_NAME name 'bgfx_init';
 
 (* Shutdown bgfx library. *)
@@ -2341,8 +2341,7 @@ procedure bgfx_shutdown(); cdecl;
      - `BGFX_RESET_VSYNC` - Enable V-Sync.
      - `BGFX_RESET_MAXANISOTROPY` - Turn on/off max anisotropy.
      - `BGFX_RESET_CAPTURE` - Begin screen capture.
-     - `BGFX_RESET_FLUSH_AFTER_RENDER` - Flush rendering after submitting to
-     GPU.
+     - `BGFX_RESET_FLUSH_AFTER_RENDER` - Flush rendering after submitting to GPU.
      - `BGFX_RESET_FLIP_AFTER_RENDER` - This flag  specifies where flip
      occurs. Default behavior is that flip occurs before rendering new
      frame. This flag only has effect when `BGFX_CONFIG_MULTITHREADED=0`.
@@ -2389,7 +2388,7 @@ function bgfx_alloc(_size: UInt32): Pbgfx_memory_t; cdecl;
    @param(_data [in] Pointer to data to be copied.)
    @param(_size [in] Size of data to be copied.)
    @returns(Allocated memory.) *)
-function bgfx_copy(_data: Pointer; _size: UInt32): Pbgfx_memory_t; cdecl;
+function bgfx_copy(const _data: Pointer; _size: UInt32): Pbgfx_memory_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_copy';
 
 (* Make reference to data to pass to bgfx. Unlike `bgfx::alloc`, this call
@@ -2403,7 +2402,7 @@ function bgfx_copy(_data: Pointer; _size: UInt32): Pbgfx_memory_t; cdecl;
    @param(_data [in] Pointer to data.)
    @param(_size [in] Size of data.)
    @returns(Referenced memory.) *)
-function bgfx_make_ref(_data: Pointer; _size: UInt32): Pbgfx_memory_t; cdecl;
+function bgfx_make_ref(const _data: Pointer; _size: UInt32): Pbgfx_memory_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_make_ref';
 
 (* Make reference to data to pass to bgfx. Unlike `bgfx::alloc`, this call
@@ -2419,7 +2418,7 @@ function bgfx_make_ref(_data: Pointer; _size: UInt32): Pbgfx_memory_t; cdecl;
    @param(_releaseFn [in] Callback function to release memory after use.)
    @param(_userData [in] User data to be passed to callback function.)
    @returns(Referenced memory.) *)
-function bgfx_make_ref_release(_data: Pointer; _size: UInt32; _releaseFn: bgfx_release_fn_t; _userData: Pointer): Pbgfx_memory_t; cdecl;
+function bgfx_make_ref_release(const _data: Pointer; _size: UInt32; _releaseFn: bgfx_release_fn_t; _userData: Pointer): Pbgfx_memory_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_make_ref_release';
 
 (* Set debug flags.
@@ -2441,28 +2440,24 @@ procedure bgfx_set_debug(_debug: UInt32); cdecl;
 procedure bgfx_dbg_text_clear(_attr: UInt8; _small: Boolean); cdecl;
   external BGFX_LIB_NAME name 'bgfx_dbg_text_clear';
 
-(* Print formatted data to internal debug text character-buffer (VGA-compatible
-   text mode).
+(* Print formatted data to internal debug text character-buffer (VGA-compatible text mode).
    @param(_x [in] Position x from the left corner of the window.)
    @param(_y [in] Position y from the top corner of the window.)
-   @param(_attr [in] Color palette. Where top 4-bits represent index of
-     background, and bottom 4-bits represent foreground color from standard VGA
-     text palette (ANSI escape codes).)
+   @param(_attr [in] Color palette. Where top 4-bits represent index of background, and bottom
+     4-bits represent foreground color from standard VGA text palette (ANSI escape codes).)
    @param(_format [in] `printf` style format.)
    @param( [in]) *)
-procedure bgfx_dbg_text_printf(_x: UInt16; _y: UInt16; _attr: UInt8; _format: PUTF8Char) varargs; cdecl;
+procedure bgfx_dbg_text_printf(_x: UInt16; _y: UInt16; _attr: UInt8; const _format: PUTF8Char) varargs; cdecl;
   external BGFX_LIB_NAME name 'bgfx_dbg_text_printf';
 
-(* Print formatted data from variable argument list to internal debug text
-   character-buffer (VGA-compatible text mode).
+(* Print formatted data from variable argument list to internal debug text character-buffer (VGA-compatible text mode).
    @param(_x [in] Position x from the left corner of the window.)
    @param(_y [in] Position y from the top corner of the window.)
-   @param(_attr [in] Color palette. Where top 4-bits represent index of
-     background, and bottom 4-bits represent foreground color from standard VGA
-     text palette (ANSI escape codes).)
+   @param(_attr [in] Color palette. Where top 4-bits represent index of background, and bottom
+     4-bits represent foreground color from standard VGA text palette (ANSI escape codes).)
    @param(_format [in] `printf` style format.)
    @param(_argList [in] Variable arguments list for format string.) *)
-procedure bgfx_dbg_text_vprintf(_x: UInt16; _y: UInt16; _attr: UInt8; _format: PUTF8Char; _argList: Pointer); cdecl;
+procedure bgfx_dbg_text_vprintf(_x: UInt16; _y: UInt16; _attr: UInt8; const _format: PUTF8Char; _argList: Pointer); cdecl;
   external BGFX_LIB_NAME name 'bgfx_dbg_text_vprintf';
 
 (* Draw image into internal debug text buffer.
@@ -2472,7 +2467,7 @@ procedure bgfx_dbg_text_vprintf(_x: UInt16; _y: UInt16; _attr: UInt8; _format: P
    @param(_height [in] Image height.)
    @param(_data [in] Raw image data (character/attribute raw encoding).)
    @param(_pitch [in] Image pitch in bytes.) *)
-procedure bgfx_dbg_text_image(_x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16; _data: Pointer; _pitch: UInt16); cdecl;
+procedure bgfx_dbg_text_image(_x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16; const _data: Pointer; _pitch: UInt16); cdecl;
   external BGFX_LIB_NAME name 'bgfx_dbg_text_image';
 
 (* Create static index buffer.
@@ -2480,26 +2475,24 @@ procedure bgfx_dbg_text_image(_x: UInt16; _y: UInt16; _width: UInt16; _height: U
    @param(_flags [in] Buffer creation flags.
      - `BGFX_BUFFER_NONE` - No flags.
      - `BGFX_BUFFER_COMPUTE_READ` - Buffer will be read from by compute shader.
-     - `BGFX_BUFFER_COMPUTE_WRITE` - Buffer will be written into by compute
-     shader. When buffer is created with `BGFX_BUFFER_COMPUTE_WRITE` flag it
-     cannot be updated from CPU.
-     - `BGFX_BUFFER_COMPUTE_READ_WRITE` - Buffer will be used for read/write by
-     compute shader.
-     - `BGFX_BUFFER_ALLOW_RESIZE` - Buffer will resize on buffer update if a
-     different amount of data is passed. If this flag is not specified, and more
-     data is passed on update, the buffer will be trimmed to fit the existing
-     buffer size. This flag has effect only on dynamic buffers.
-     - `BGFX_BUFFER_INDEX32` - Buffer is using 32-bit indices. This flag has
-     effect only on index buffers.) *)
-function bgfx_create_index_buffer(_mem: Pbgfx_memory_t; _flags: UInt16): bgfx_index_buffer_handle_t; cdecl;
+     - `BGFX_BUFFER_COMPUTE_WRITE` - Buffer will be written into by compute shader. When buffer
+     is created with `BGFX_BUFFER_COMPUTE_WRITE` flag it cannot be updated from CPU.
+     - `BGFX_BUFFER_COMPUTE_READ_WRITE` - Buffer will be used for read/write by compute shader.
+     - `BGFX_BUFFER_ALLOW_RESIZE` - Buffer will resize on buffer update if a different amount of
+     data is passed. If this flag is not specified, and more data is passed on update, the buffer
+     will be trimmed to fit the existing buffer size. This flag has effect only on dynamic
+     buffers.
+     - `BGFX_BUFFER_INDEX32` - Buffer is using 32-bit indices. This flag has effect only on
+     index buffers.) *)
+function bgfx_create_index_buffer(const _mem: Pbgfx_memory_t; _flags: UInt16): bgfx_index_buffer_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_index_buffer';
 
 (* Set static index buffer debug name.
    @param(_handle [in] Static index buffer handle.)
    @param(_name [in] Static index buffer name.)
-   @param(_len [in] Static index buffer name length (if length is INT32_MAX, it's
-     expected that _name is zero terminated string.)) *)
-procedure bgfx_set_index_buffer_name(_handle: bgfx_index_buffer_handle_t; _name: PUTF8Char; _len: Int32); cdecl;
+   @param(_len [in] Static index buffer name length (if length is INT32_MAX, it's expected
+     that _name is zero terminated string.)) *)
+procedure bgfx_set_index_buffer_name(_handle: bgfx_index_buffer_handle_t; const _name: PUTF8Char; _len: Int32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_index_buffer_name';
 
 (* Destroy static index buffer.
@@ -2509,7 +2502,7 @@ procedure bgfx_destroy_index_buffer(_handle: bgfx_index_buffer_handle_t); cdecl;
 
 (* Create vertex layout.
    @param(_layout [in] Vertex layout.) *)
-function bgfx_create_vertex_layout(_layout: Pbgfx_vertex_layout_t): bgfx_vertex_layout_handle_t; cdecl;
+function bgfx_create_vertex_layout(const _layout: Pbgfx_vertex_layout_t): bgfx_vertex_layout_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_vertex_layout';
 
 (* Destroy vertex layout.
@@ -2523,27 +2516,23 @@ procedure bgfx_destroy_vertex_layout(_layoutHandle: bgfx_vertex_layout_handle_t)
    @param(_flags [in] Buffer creation flags.
      - `BGFX_BUFFER_NONE` - No flags.
      - `BGFX_BUFFER_COMPUTE_READ` - Buffer will be read from by compute shader.
-     - `BGFX_BUFFER_COMPUTE_WRITE` - Buffer will be written into by compute
-     shader. When buffer is created with `BGFX_BUFFER_COMPUTE_WRITE` flag it
-     cannot be updated from CPU.
-     - `BGFX_BUFFER_COMPUTE_READ_WRITE` - Buffer will be used for read/write by
-     compute shader.
-     - `BGFX_BUFFER_ALLOW_RESIZE` - Buffer will resize on buffer update if a
-     different amount of data is passed. If this flag is not specified, and more
-     data is passed on update, the buffer will be trimmed to fit the existing
-     buffer size. This flag has effect only on dynamic buffers.
-     - `BGFX_BUFFER_INDEX32` - Buffer is using 32-bit indices. This flag has
-     effect only on index buffers.)
+     - `BGFX_BUFFER_COMPUTE_WRITE` - Buffer will be written into by compute shader. When buffer
+     is created with `BGFX_BUFFER_COMPUTE_WRITE` flag it cannot be updated from CPU.
+     - `BGFX_BUFFER_COMPUTE_READ_WRITE` - Buffer will be used for read/write by compute shader.
+     - `BGFX_BUFFER_ALLOW_RESIZE` - Buffer will resize on buffer update if a different amount of
+     data is passed. If this flag is not specified, and more data is passed on update, the buffer
+     will be trimmed to fit the existing buffer size. This flag has effect only on dynamic buffers.
+     - `BGFX_BUFFER_INDEX32` - Buffer is using 32-bit indices. This flag has effect only on index buffers.)
    @returns(Static vertex buffer handle.) *)
-function bgfx_create_vertex_buffer(_mem: Pbgfx_memory_t; _layout: Pbgfx_vertex_layout_t; _flags: UInt16): bgfx_vertex_buffer_handle_t; cdecl;
+function bgfx_create_vertex_buffer(const _mem: Pbgfx_memory_t; const _layout: Pbgfx_vertex_layout_t; _flags: UInt16): bgfx_vertex_buffer_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_vertex_buffer';
 
 (* Set static vertex buffer debug name.
    @param(_handle [in] Static vertex buffer handle.)
    @param(_name [in] Static vertex buffer name.)
-   @param(_len [in] Static vertex buffer name length (if length is INT32_MAX,
-     it's expected that _name is zero terminated string.)) *)
-procedure bgfx_set_vertex_buffer_name(_handle: bgfx_vertex_buffer_handle_t; _name: PUTF8Char; _len: Int32); cdecl;
+   @param(_len [in] Static vertex buffer name length (if length is INT32_MAX, it's expected
+     that _name is zero terminated string.)) *)
+procedure bgfx_set_vertex_buffer_name(_handle: bgfx_vertex_buffer_handle_t; const _name: PUTF8Char; _len: Int32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_vertex_buffer_name';
 
 (* Destroy static vertex buffer.
@@ -2556,17 +2545,15 @@ procedure bgfx_destroy_vertex_buffer(_handle: bgfx_vertex_buffer_handle_t); cdec
    @param(_flags [in] Buffer creation flags.
      - `BGFX_BUFFER_NONE` - No flags.
      - `BGFX_BUFFER_COMPUTE_READ` - Buffer will be read from by compute shader.
-     - `BGFX_BUFFER_COMPUTE_WRITE` - Buffer will be written into by compute
-     shader. When buffer is created with `BGFX_BUFFER_COMPUTE_WRITE` flag it
-     cannot be updated from CPU.
-     - `BGFX_BUFFER_COMPUTE_READ_WRITE` - Buffer will be used for read/write by
-     compute shader.
-     - `BGFX_BUFFER_ALLOW_RESIZE` - Buffer will resize on buffer update if a
-     different amount of data is passed. If this flag is not specified, and more
-     data is passed on update, the buffer will be trimmed to fit the existing
-     buffer size. This flag has effect only on dynamic buffers.
-     - `BGFX_BUFFER_INDEX32` - Buffer is using 32-bit indices. This flag has
-     effect only on index buffers.)
+     - `BGFX_BUFFER_COMPUTE_WRITE` - Buffer will be written into by compute shader. When buffer
+     is created with `BGFX_BUFFER_COMPUTE_WRITE` flag it cannot be updated from CPU.
+     - `BGFX_BUFFER_COMPUTE_READ_WRITE` - Buffer will be used for read/write by compute shader.
+     - `BGFX_BUFFER_ALLOW_RESIZE` - Buffer will resize on buffer update if a different amount of
+     data is passed. If this flag is not specified, and more data is passed on update, the buffer
+     will be trimmed to fit the existing buffer size. This flag has effect only on dynamic
+     buffers.
+     - `BGFX_BUFFER_INDEX32` - Buffer is using 32-bit indices. This flag has effect only on
+     index buffers.)
    @returns(Dynamic index buffer handle.) *)
 function bgfx_create_dynamic_index_buffer(_num: UInt32; _flags: UInt16): bgfx_dynamic_index_buffer_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_dynamic_index_buffer';
@@ -2576,26 +2563,24 @@ function bgfx_create_dynamic_index_buffer(_num: UInt32; _flags: UInt16): bgfx_dy
    @param(_flags [in] Buffer creation flags.
      - `BGFX_BUFFER_NONE` - No flags.
      - `BGFX_BUFFER_COMPUTE_READ` - Buffer will be read from by compute shader.
-     - `BGFX_BUFFER_COMPUTE_WRITE` - Buffer will be written into by compute
-     shader. When buffer is created with `BGFX_BUFFER_COMPUTE_WRITE` flag it
-     cannot be updated from CPU.
-     - `BGFX_BUFFER_COMPUTE_READ_WRITE` - Buffer will be used for read/write by
-     compute shader.
-     - `BGFX_BUFFER_ALLOW_RESIZE` - Buffer will resize on buffer update if a
-     different amount of data is passed. If this flag is not specified, and more
-     data is passed on update, the buffer will be trimmed to fit the existing
-     buffer size. This flag has effect only on dynamic buffers.
-     - `BGFX_BUFFER_INDEX32` - Buffer is using 32-bit indices. This flag has
-     effect only on index buffers.)
+     - `BGFX_BUFFER_COMPUTE_WRITE` - Buffer will be written into by compute shader. When buffer
+     is created with `BGFX_BUFFER_COMPUTE_WRITE` flag it cannot be updated from CPU.
+     - `BGFX_BUFFER_COMPUTE_READ_WRITE` - Buffer will be used for read/write by compute shader.
+     - `BGFX_BUFFER_ALLOW_RESIZE` - Buffer will resize on buffer update if a different amount of
+     data is passed. If this flag is not specified, and more data is passed on update, the buffer
+     will be trimmed to fit the existing buffer size. This flag has effect only on dynamic
+     buffers.
+     - `BGFX_BUFFER_INDEX32` - Buffer is using 32-bit indices. This flag has effect only on
+     index buffers.)
    @returns(Dynamic index buffer handle.) *)
-function bgfx_create_dynamic_index_buffer_mem(_mem: Pbgfx_memory_t; _flags: UInt16): bgfx_dynamic_index_buffer_handle_t; cdecl;
+function bgfx_create_dynamic_index_buffer_mem(const _mem: Pbgfx_memory_t; _flags: UInt16): bgfx_dynamic_index_buffer_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_dynamic_index_buffer_mem';
 
 (* Update dynamic index buffer.
    @param(_handle [in] Dynamic index buffer handle.)
    @param(_startIndex [in] Start index.)
    @param(_mem [in] Index buffer data.) *)
-procedure bgfx_update_dynamic_index_buffer(_handle: bgfx_dynamic_index_buffer_handle_t; _startIndex: UInt32; _mem: Pbgfx_memory_t); cdecl;
+procedure bgfx_update_dynamic_index_buffer(_handle: bgfx_dynamic_index_buffer_handle_t; _startIndex: UInt32; const _mem: Pbgfx_memory_t); cdecl;
   external BGFX_LIB_NAME name 'bgfx_update_dynamic_index_buffer';
 
 (* Destroy dynamic index buffer.
@@ -2609,19 +2594,17 @@ procedure bgfx_destroy_dynamic_index_buffer(_handle: bgfx_dynamic_index_buffer_h
    @param(_flags [in] Buffer creation flags.
      - `BGFX_BUFFER_NONE` - No flags.
      - `BGFX_BUFFER_COMPUTE_READ` - Buffer will be read from by compute shader.
-     - `BGFX_BUFFER_COMPUTE_WRITE` - Buffer will be written into by compute
-     shader. When buffer is created with `BGFX_BUFFER_COMPUTE_WRITE` flag it
-     cannot be updated from CPU.
-     - `BGFX_BUFFER_COMPUTE_READ_WRITE` - Buffer will be used for read/write by
-     compute shader.
-     - `BGFX_BUFFER_ALLOW_RESIZE` - Buffer will resize on buffer update if a
-     different amount of data is passed. If this flag is not specified, and more
-     data is passed on update, the buffer will be trimmed to fit the existing
-     buffer size. This flag has effect only on dynamic buffers.
-     - `BGFX_BUFFER_INDEX32` - Buffer is using 32-bit indices. This flag has
-     effect only on index buffers.)
+     - `BGFX_BUFFER_COMPUTE_WRITE` - Buffer will be written into by compute shader. When buffer
+     is created with `BGFX_BUFFER_COMPUTE_WRITE` flag it cannot be updated from CPU.
+     - `BGFX_BUFFER_COMPUTE_READ_WRITE` - Buffer will be used for read/write by compute shader.
+     - `BGFX_BUFFER_ALLOW_RESIZE` - Buffer will resize on buffer update if a different amount of
+     data is passed. If this flag is not specified, and more data is passed on update, the buffer
+     will be trimmed to fit the existing buffer size. This flag has effect only on dynamic
+     buffers.
+     - `BGFX_BUFFER_INDEX32` - Buffer is using 32-bit indices. This flag has effect only on
+     index buffers.)
    @returns(Dynamic vertex buffer handle.) *)
-function bgfx_create_dynamic_vertex_buffer(_num: UInt32; _layout: Pbgfx_vertex_layout_t; _flags: UInt16): bgfx_dynamic_vertex_buffer_handle_t; cdecl;
+function bgfx_create_dynamic_vertex_buffer(_num: UInt32; const _layout: Pbgfx_vertex_layout_t; _flags: UInt16): bgfx_dynamic_vertex_buffer_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_dynamic_vertex_buffer';
 
 (* Create dynamic vertex buffer and initialize it.
@@ -2630,26 +2613,24 @@ function bgfx_create_dynamic_vertex_buffer(_num: UInt32; _layout: Pbgfx_vertex_l
    @param(_flags [in] Buffer creation flags.
      - `BGFX_BUFFER_NONE` - No flags.
      - `BGFX_BUFFER_COMPUTE_READ` - Buffer will be read from by compute shader.
-     - `BGFX_BUFFER_COMPUTE_WRITE` - Buffer will be written into by compute
-     shader. When buffer is created with `BGFX_BUFFER_COMPUTE_WRITE` flag it
-     cannot be updated from CPU.
-     - `BGFX_BUFFER_COMPUTE_READ_WRITE` - Buffer will be used for read/write by
-     compute shader.
-     - `BGFX_BUFFER_ALLOW_RESIZE` - Buffer will resize on buffer update if a
-     different amount of data is passed. If this flag is not specified, and more
-     data is passed on update, the buffer will be trimmed to fit the existing
-     buffer size. This flag has effect only on dynamic buffers.
-     - `BGFX_BUFFER_INDEX32` - Buffer is using 32-bit indices. This flag has
-     effect only on index buffers.)
+     - `BGFX_BUFFER_COMPUTE_WRITE` - Buffer will be written into by compute shader. When buffer
+     is created with `BGFX_BUFFER_COMPUTE_WRITE` flag it cannot be updated from CPU.
+     - `BGFX_BUFFER_COMPUTE_READ_WRITE` - Buffer will be used for read/write by compute shader.
+     - `BGFX_BUFFER_ALLOW_RESIZE` - Buffer will resize on buffer update if a different amount of
+     data is passed. If this flag is not specified, and more data is passed on update, the buffer
+     will be trimmed to fit the existing buffer size. This flag has effect only on dynamic
+     buffers.
+     - `BGFX_BUFFER_INDEX32` - Buffer is using 32-bit indices. This flag has effect only on
+     index buffers.)
    @returns(Dynamic vertex buffer handle.) *)
-function bgfx_create_dynamic_vertex_buffer_mem(_mem: Pbgfx_memory_t; _layout: Pbgfx_vertex_layout_t; _flags: UInt16): bgfx_dynamic_vertex_buffer_handle_t; cdecl;
+function bgfx_create_dynamic_vertex_buffer_mem(const _mem: Pbgfx_memory_t; const _layout: Pbgfx_vertex_layout_t; _flags: UInt16): bgfx_dynamic_vertex_buffer_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_dynamic_vertex_buffer_mem';
 
 (* Update dynamic vertex buffer.
    @param(_handle [in] Dynamic vertex buffer handle.)
    @param(_startVertex [in] Start vertex.)
    @param(_mem [in] Vertex buffer data.) *)
-procedure bgfx_update_dynamic_vertex_buffer(_handle: bgfx_dynamic_vertex_buffer_handle_t; _startVertex: UInt32; _mem: Pbgfx_memory_t); cdecl;
+procedure bgfx_update_dynamic_vertex_buffer(_handle: bgfx_dynamic_vertex_buffer_handle_t; _startVertex: UInt32; const _mem: Pbgfx_memory_t); cdecl;
   external BGFX_LIB_NAME name 'bgfx_update_dynamic_vertex_buffer';
 
 (* Destroy dynamic vertex buffer.
@@ -2667,7 +2648,7 @@ function bgfx_get_avail_transient_index_buffer(_num: UInt32): UInt32; cdecl;
    @param(_num [in] Number of required vertices.)
    @param(_layout [in] Vertex layout.)
    @returns(Number of requested or maximum available vertices.) *)
-function bgfx_get_avail_transient_vertex_buffer(_num: UInt32; _layout: Pbgfx_vertex_layout_t): UInt32; cdecl;
+function bgfx_get_avail_transient_vertex_buffer(_num: UInt32; const _layout: Pbgfx_vertex_layout_t): UInt32; cdecl;
   external BGFX_LIB_NAME name 'bgfx_get_avail_transient_vertex_buffer';
 
 (* Returns number of requested or maximum available instance buffer slots.
@@ -2693,7 +2674,7 @@ procedure bgfx_alloc_transient_index_buffer(_tib: Pbgfx_transient_index_buffer_t
      calls.)
    @param(_num [in] Number of vertices to allocate.)
    @param(_layout [in] Vertex layout.) *)
-procedure bgfx_alloc_transient_vertex_buffer(_tvb: Pbgfx_transient_vertex_buffer_t; _num: UInt32; _layout: Pbgfx_vertex_layout_t); cdecl;
+procedure bgfx_alloc_transient_vertex_buffer(_tvb: Pbgfx_transient_vertex_buffer_t; _num: UInt32; const _layout: Pbgfx_vertex_layout_t); cdecl;
   external BGFX_LIB_NAME name 'bgfx_alloc_transient_vertex_buffer';
 
 (* Check for required space and allocate transient vertex and index
@@ -2710,7 +2691,7 @@ procedure bgfx_alloc_transient_vertex_buffer(_tvb: Pbgfx_transient_vertex_buffer
      for the duration of frame, and it can be reused for multiple draw
      calls.)
    @param(_numIndices [in] Number of indices to allocate.) *)
-function bgfx_alloc_transient_buffers(_tvb: Pbgfx_transient_vertex_buffer_t; _layout: Pbgfx_vertex_layout_t; _numVertices: UInt32; _tib: Pbgfx_transient_index_buffer_t; _numIndices: UInt32): Boolean; cdecl;
+function bgfx_alloc_transient_buffers(_tvb: Pbgfx_transient_vertex_buffer_t; const _layout: Pbgfx_vertex_layout_t; _numVertices: UInt32; _tib: Pbgfx_transient_index_buffer_t; _numIndices: UInt32): Boolean; cdecl;
   external BGFX_LIB_NAME name 'bgfx_alloc_transient_buffers';
 
 (* Allocate instance data buffer.
@@ -2736,7 +2717,7 @@ procedure bgfx_destroy_indirect_buffer(_handle: bgfx_indirect_buffer_handle_t); 
 (* Create shader from memory buffer.
    @param(_mem [in] Shader binary.)
    @returns(Shader handle.) *)
-function bgfx_create_shader(_mem: Pbgfx_memory_t): bgfx_shader_handle_t; cdecl;
+function bgfx_create_shader(const _mem: Pbgfx_memory_t): bgfx_shader_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_shader';
 
 (* Returns the number of uniforms and uniform handles used inside a shader.
@@ -2754,7 +2735,7 @@ function bgfx_get_shader_uniforms(_handle: bgfx_shader_handle_t; _uniforms: Pbgf
    @param(_name [in] Shader name.)
    @param(_len [in] Shader name length (if length is INT32_MAX, it's expected
      that _name is zero terminated string).) *)
-procedure bgfx_set_shader_name(_handle: bgfx_shader_handle_t; _name: PUTF8Char; _len: Int32); cdecl;
+procedure bgfx_set_shader_name(_handle: bgfx_shader_handle_t; const _name: PUTF8Char; _len: Int32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_shader_name';
 
 (* Destroy shader.
@@ -2768,8 +2749,7 @@ procedure bgfx_destroy_shader(_handle: bgfx_shader_handle_t); cdecl;
 (* Create program with vertex and fragment shaders.
    @param(_vsh [in] Vertex shader.)
    @param(_fsh [in] Fragment shader.)
-   @param(_destroyShaders [in] If true, shaders will be destroyed when program is
-     destroyed.)
+   @param(_destroyShaders [in] If true, shaders will be destroyed when program is destroyed.)
    @returns(Program handle if vertex shader output and fragment shader
      input are matching, otherwise returns invalid program handle.) *)
 function bgfx_create_program(_vsh: bgfx_shader_handle_t; _fsh: bgfx_shader_handle_t; _destroyShaders: Boolean): bgfx_program_handle_t; cdecl;
@@ -2777,8 +2757,7 @@ function bgfx_create_program(_vsh: bgfx_shader_handle_t; _fsh: bgfx_shader_handl
 
 (* Create program with compute shader.
    @param(_csh [in] Compute shader.)
-   @param(_destroyShaders [in] If true, shaders will be destroyed when program is
-     destroyed.)
+   @param(_destroyShaders [in] If true, shaders will be destroyed when program is destroyed.)
    @returns(Program handle.) *)
 function bgfx_create_compute_program(_csh: bgfx_shader_handle_t; _destroyShaders: Boolean): bgfx_program_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_compute_program';
@@ -2812,18 +2791,16 @@ procedure bgfx_calc_texture_size(_info: Pbgfx_texture_info_t; _width: UInt16; _h
 
 (* Create texture from memory buffer.
    @param(_mem [in] DDS, KTX or PVR texture binary data.)
-   @param(_flags [in] Texture creation (see `BGFX_TEXTURE_*`.), and sampler (see
-     `BGFX_SAMPLER_*`) flags. Default texture sampling mode is linear, and wrap
-     mode is repeat.
+   @param(_flags [in] Texture creation (see `BGFX_TEXTURE_*`.), and sampler (see `BGFX_SAMPLER_*`)
+     flags. Default texture sampling mode is linear, and wrap mode is repeat.
      - `BGFX_SAMPLER_[U/V/W]_[MIRROR/CLAMP]` - Mirror or clamp to edge wrap
      mode.
      - `BGFX_SAMPLER_[MIN/MAG/MIP]_[POINT/ANISOTROPIC]` - Point or anisotropic
      sampling.)
    @param(_skip [in] Skip top level mips when parsing texture.)
-   @param(_info [out] When non-`NULL` is specified it returns parsed texture
-     information.)
+   @param(_info [out] When non-`NULL` is specified it returns parsed texture information.)
    @returns(Texture handle.) *)
-function bgfx_create_texture(_mem: Pbgfx_memory_t; _flags: UInt64; _skip: UInt8; _info: Pbgfx_texture_info_t): bgfx_texture_handle_t; cdecl;
+function bgfx_create_texture(const _mem: Pbgfx_memory_t; _flags: UInt64; _skip: UInt8; _info: Pbgfx_texture_info_t): bgfx_texture_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_texture';
 
 (* Create 2D texture.
@@ -2833,33 +2810,28 @@ function bgfx_create_texture(_mem: Pbgfx_memory_t; _flags: UInt64; _skip: UInt8;
    @param(_numLayers [in] Number of layers in texture array. Must be 1 if caps
      `BGFX_CAPS_TEXTURE_2D_ARRAY` flag is not set.)
    @param(_format [in] Texture format. See: `TextureFormat::Enum`.)
-   @param(_flags [in] Texture creation (see `BGFX_TEXTURE_*`.), and sampler (see
-     `BGFX_SAMPLER_*`) flags. Default texture sampling mode is linear, and wrap
-     mode is repeat.
+   @param(_flags [in] Texture creation (see `BGFX_TEXTURE_*`.), and sampler (see `BGFX_SAMPLER_*`)
+     flags. Default texture sampling mode is linear, and wrap mode is repeat.
      - `BGFX_SAMPLER_[U/V/W]_[MIRROR/CLAMP]` - Mirror or clamp to edge wrap
      mode.
      - `BGFX_SAMPLER_[MIN/MAG/MIP]_[POINT/ANISOTROPIC]` - Point or anisotropic
      sampling.)
-   @param(_mem [in] Texture data. If `_mem` is non-NULL, created texture will be
-     immutable. If
-     `_mem` is NULL content of the texture is uninitialized. When `_numLayers` is
-     more than 1, expected memory layout is texture and all mips together for each
-     array element.)
+   @param(_mem [in] Texture data. If `_mem` is non-NULL, created texture will be immutable. If
+     `_mem` is NULL content of the texture is uninitialized. When `_numLayers` is more than
+     1, expected memory layout is texture and all mips together for each array element.)
    @returns(Texture handle.) *)
-function bgfx_create_texture_2d(_width: UInt16; _height: UInt16; _hasMips: Boolean; _numLayers: UInt16; _format: bgfx_texture_format_t; _flags: UInt64; _mem: Pbgfx_memory_t): bgfx_texture_handle_t; cdecl;
+function bgfx_create_texture_2d(_width: UInt16; _height: UInt16; _hasMips: Boolean; _numLayers: UInt16; _format: bgfx_texture_format_t; _flags: UInt64; const _mem: Pbgfx_memory_t): bgfx_texture_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_texture_2d';
 
-(* Create texture with size based on backbuffer ratio. Texture will maintain
-   ratio if back buffer resolution changes.
-   @param(_ratio [in] Texture size in respect to back-buffer size. See:
-     `BackbufferRatio::Enum`.)
+(* Create texture with size based on backbuffer ratio. Texture will maintain ratio
+   if back buffer resolution changes.
+   @param(_ratio [in] Texture size in respect to back-buffer size. See: `BackbufferRatio::Enum`.)
    @param(_hasMips [in] Indicates that texture contains full mip-map chain.)
    @param(_numLayers [in] Number of layers in texture array. Must be 1 if caps
      `BGFX_CAPS_TEXTURE_2D_ARRAY` flag is not set.)
    @param(_format [in] Texture format. See: `TextureFormat::Enum`.)
-   @param(_flags [in] Texture creation (see `BGFX_TEXTURE_*`.), and sampler (see
-     `BGFX_SAMPLER_*`) flags. Default texture sampling mode is linear, and wrap
-     mode is repeat.
+   @param(_flags [in] Texture creation (see `BGFX_TEXTURE_*`.), and sampler (see `BGFX_SAMPLER_*`)
+     flags. Default texture sampling mode is linear, and wrap mode is repeat.
      - `BGFX_SAMPLER_[U/V/W]_[MIRROR/CLAMP]` - Mirror or clamp to edge wrap
      mode.
      - `BGFX_SAMPLER_[MIN/MAG/MIP]_[POINT/ANISOTROPIC]` - Point or anisotropic
@@ -2874,20 +2846,17 @@ function bgfx_create_texture_2d_scaled(_ratio: bgfx_backbuffer_ratio_t; _hasMips
    @param(_depth [in] Depth.)
    @param(_hasMips [in] Indicates that texture contains full mip-map chain.)
    @param(_format [in] Texture format. See: `TextureFormat::Enum`.)
-   @param(_flags [in] Texture creation (see `BGFX_TEXTURE_*`.), and sampler (see
-     `BGFX_SAMPLER_*`) flags. Default texture sampling mode is linear, and wrap
-     mode is repeat.
+   @param(_flags [in] Texture creation (see `BGFX_TEXTURE_*`.), and sampler (see `BGFX_SAMPLER_*`)
+     flags. Default texture sampling mode is linear, and wrap mode is repeat.
      - `BGFX_SAMPLER_[U/V/W]_[MIRROR/CLAMP]` - Mirror or clamp to edge wrap
      mode.
      - `BGFX_SAMPLER_[MIN/MAG/MIP]_[POINT/ANISOTROPIC]` - Point or anisotropic
      sampling.)
-   @param(_mem [in] Texture data. If `_mem` is non-NULL, created texture will be
-     immutable. If
-     `_mem` is NULL content of the texture is uninitialized. When `_numLayers` is
-     more than 1, expected memory layout is texture and all mips together for each
-     array element.)
+   @param(_mem [in] Texture data. If `_mem` is non-NULL, created texture will be immutable. If
+     `_mem` is NULL content of the texture is uninitialized. When `_numLayers` is more than
+     1, expected memory layout is texture and all mips together for each array element.)
    @returns(Texture handle.) *)
-function bgfx_create_texture_3d(_width: UInt16; _height: UInt16; _depth: UInt16; _hasMips: Boolean; _format: bgfx_texture_format_t; _flags: UInt64; _mem: Pbgfx_memory_t): bgfx_texture_handle_t; cdecl;
+function bgfx_create_texture_3d(_width: UInt16; _height: UInt16; _depth: UInt16; _hasMips: Boolean; _format: bgfx_texture_format_t; _flags: UInt64; const _mem: Pbgfx_memory_t): bgfx_texture_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_texture_3d';
 
 (* Create Cube texture.
@@ -2896,26 +2865,22 @@ function bgfx_create_texture_3d(_width: UInt16; _height: UInt16; _depth: UInt16;
    @param(_numLayers [in] Number of layers in texture array. Must be 1 if caps
      `BGFX_CAPS_TEXTURE_2D_ARRAY` flag is not set.)
    @param(_format [in] Texture format. See: `TextureFormat::Enum`.)
-   @param(_flags [in] Texture creation (see `BGFX_TEXTURE_*`.), and sampler (see
-     `BGFX_SAMPLER_*`) flags. Default texture sampling mode is linear, and wrap
-     mode is repeat.
+   @param(_flags [in] Texture creation (see `BGFX_TEXTURE_*`.), and sampler (see `BGFX_SAMPLER_*`)
+     flags. Default texture sampling mode is linear, and wrap mode is repeat.
      - `BGFX_SAMPLER_[U/V/W]_[MIRROR/CLAMP]` - Mirror or clamp to edge wrap
      mode.
      - `BGFX_SAMPLER_[MIN/MAG/MIP]_[POINT/ANISOTROPIC]` - Point or anisotropic
      sampling.)
-   @param(_mem [in] Texture data. If `_mem` is non-NULL, created texture will be
-     immutable. If
-     `_mem` is NULL content of the texture is uninitialized. When `_numLayers` is
-     more than 1, expected memory layout is texture and all mips together for each
-     array element.)
+   @param(_mem [in] Texture data. If `_mem` is non-NULL, created texture will be immutable. If
+     `_mem` is NULL content of the texture is uninitialized. When `_numLayers` is more than
+     1, expected memory layout is texture and all mips together for each array element.)
    @returns(Texture handle.) *)
-function bgfx_create_texture_cube(_size: UInt16; _hasMips: Boolean; _numLayers: UInt16; _format: bgfx_texture_format_t; _flags: UInt64; _mem: Pbgfx_memory_t): bgfx_texture_handle_t; cdecl;
+function bgfx_create_texture_cube(_size: UInt16; _hasMips: Boolean; _numLayers: UInt16; _format: bgfx_texture_format_t; _flags: UInt64; const _mem: Pbgfx_memory_t): bgfx_texture_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_texture_cube';
 
 (* Update 2D texture.
 
-   It's valid to update only mutable texture. See
-   `bgfx::createTexture2D` for more info.
+   It's valid to update only mutable texture. See `bgfx::createTexture2D` for more info.
    @param(_handle [in] Texture handle.)
    @param(_layer [in] Layer in texture array.)
    @param(_mip [in] Mip level.)
@@ -2926,13 +2891,12 @@ function bgfx_create_texture_cube(_size: UInt16; _hasMips: Boolean; _numLayers: 
    @param(_mem [in] Texture update data.)
    @param(_pitch [in] Pitch of input image (bytes). When _pitch is set to
      UINT16_MAX, it will be calculated internally based on _width.) *)
-procedure bgfx_update_texture_2d(_handle: bgfx_texture_handle_t; _layer: UInt16; _mip: UInt8; _x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16; _mem: Pbgfx_memory_t; _pitch: UInt16); cdecl;
+procedure bgfx_update_texture_2d(_handle: bgfx_texture_handle_t; _layer: UInt16; _mip: UInt8; _x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16; const _mem: Pbgfx_memory_t; _pitch: UInt16); cdecl;
   external BGFX_LIB_NAME name 'bgfx_update_texture_2d';
 
 (* Update 3D texture.
 
-   It's valid to update only mutable texture. See
-   `bgfx::createTexture3D` for more info.
+   It's valid to update only mutable texture. See `bgfx::createTexture3D` for more info.
    @param(_handle [in] Texture handle.)
    @param(_mip [in] Mip level.)
    @param(_x [in] X offset in texture.)
@@ -2942,17 +2906,16 @@ procedure bgfx_update_texture_2d(_handle: bgfx_texture_handle_t; _layer: UInt16;
    @param(_height [in] Height of texture block.)
    @param(_depth [in] Depth of texture block.)
    @param(_mem [in] Texture update data.) *)
-procedure bgfx_update_texture_3d(_handle: bgfx_texture_handle_t; _mip: UInt8; _x: UInt16; _y: UInt16; _z: UInt16; _width: UInt16; _height: UInt16; _depth: UInt16; _mem: Pbgfx_memory_t); cdecl;
+procedure bgfx_update_texture_3d(_handle: bgfx_texture_handle_t; _mip: UInt8; _x: UInt16; _y: UInt16; _z: UInt16; _width: UInt16; _height: UInt16; _depth: UInt16; const _mem: Pbgfx_memory_t); cdecl;
   external BGFX_LIB_NAME name 'bgfx_update_texture_3d';
 
 (* Update Cube texture.
 
-   It's valid to update only mutable texture. See
-   `bgfx::createTextureCube` for more info.
+   It's valid to update only mutable texture. See `bgfx::createTextureCube` for more info.
    @param(_handle [in] Texture handle.)
    @param(_layer [in] Layer in texture array.)
-   @param(_side [in] Cubemap side `BGFX_CUBE_MAP_<POSITIVE or NEGATIVE>_<X, Y or
-     Z>`, where 0 is +X, 1 is -X, 2 is +Y, 3 is -Y, 4 is +Z, and 5 is -Z.
+   @param(_side [in] Cubemap side `BGFX_CUBE_MAP_<POSITIVE or NEGATIVE>_<X, Y or Z>`,
+     where 0 is +X, 1 is -X, 2 is +Y, 3 is -Y, 4 is +Z, and 5 is -Z.
      +----------+
      |-z       2|
      | ^  +y    |
@@ -2977,7 +2940,7 @@ procedure bgfx_update_texture_3d(_handle: bgfx_texture_handle_t; _mip: UInt8; _x
    @param(_mem [in] Texture update data.)
    @param(_pitch [in] Pitch of input image (bytes). When _pitch is set to
      UINT16_MAX, it will be calculated internally based on _width.) *)
-procedure bgfx_update_texture_cube(_handle: bgfx_texture_handle_t; _layer: UInt16; _side: UInt8; _mip: UInt8; _x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16; _mem: Pbgfx_memory_t; _pitch: UInt16); cdecl;
+procedure bgfx_update_texture_cube(_handle: bgfx_texture_handle_t; _layer: UInt16; _side: UInt8; _mip: UInt8; _x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16; const _mem: Pbgfx_memory_t; _pitch: UInt16); cdecl;
   external BGFX_LIB_NAME name 'bgfx_update_texture_cube';
 
 (* Read back texture content.
@@ -2997,19 +2960,18 @@ function bgfx_read_texture(_handle: bgfx_texture_handle_t; _data: Pointer; _mip:
    @param(_name [in] Texture name.)
    @param(_len [in] Texture name length (if length is INT32_MAX, it's expected
      that _name is zero terminated string.)) *)
-procedure bgfx_set_texture_name(_handle: bgfx_texture_handle_t; _name: PUTF8Char; _len: Int32); cdecl;
+procedure bgfx_set_texture_name(_handle: bgfx_texture_handle_t; const _name: PUTF8Char; _len: Int32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_texture_name';
 
 (* Returns texture direct access pointer.
 
-   Availability depends on: `BGFX_CAPS_TEXTURE_DIRECT_ACCESS`. This
-   feature is available on GPUs that have unified memory architecture (UMA)
-   support.
+   Availability depends on: `BGFX_CAPS_TEXTURE_DIRECT_ACCESS`. This feature
+   is available on GPUs that have unified memory architecture (UMA) support.
    @param(_handle [in] Texture handle.)
-   @returns(Pointer to texture memory. If returned pointer is `NULL` direct
-     access is not available for this texture. If pointer is `UINTPTR_MAX`
-     sentinel value it means texture is pending creation. Pointer returned can be
-     cached and it will be valid until texture is destroyed.) *)
+   @returns(Pointer to texture memory. If returned pointer is `NULL` direct access
+     is not available for this texture. If pointer is `UINTPTR_MAX` sentinel value
+     it means texture is pending creation. Pointer returned can be cached and it
+     will be valid until texture is destroyed.) *)
 function bgfx_get_direct_access_ptr(_handle: bgfx_texture_handle_t): Pointer; cdecl;
   external BGFX_LIB_NAME name 'bgfx_get_direct_access_ptr';
 
@@ -3022,9 +2984,8 @@ procedure bgfx_destroy_texture(_handle: bgfx_texture_handle_t); cdecl;
    @param(_width [in] Texture width.)
    @param(_height [in] Texture height.)
    @param(_format [in] Texture format. See: `TextureFormat::Enum`.)
-   @param(_textureFlags [in] Texture creation (see `BGFX_TEXTURE_*`.), and
-     sampler (see `BGFX_SAMPLER_*`) flags. Default texture sampling mode is
-     linear, and wrap mode is repeat.
+   @param(_textureFlags [in] Texture creation (see `BGFX_TEXTURE_*`.), and sampler (see `BGFX_SAMPLER_*`)
+     flags. Default texture sampling mode is linear, and wrap mode is repeat.
      - `BGFX_SAMPLER_[U/V/W]_[MIRROR/CLAMP]` - Mirror or clamp to edge wrap
      mode.
      - `BGFX_SAMPLER_[MIN/MAG/MIP]_[POINT/ANISOTROPIC]` - Point or anisotropic
@@ -3033,14 +2994,13 @@ procedure bgfx_destroy_texture(_handle: bgfx_texture_handle_t); cdecl;
 function bgfx_create_frame_buffer(_width: UInt16; _height: UInt16; _format: bgfx_texture_format_t; _textureFlags: UInt64): bgfx_frame_buffer_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_frame_buffer';
 
-(* Create frame buffer with size based on backbuffer ratio. Frame buffer will
-   maintain ratio if back buffer resolution changes.
+(* Create frame buffer with size based on backbuffer ratio. Frame buffer will maintain ratio
+   if back buffer resolution changes.
    @param(_ratio [in] Frame buffer size in respect to back-buffer size. See:
      `BackbufferRatio::Enum`.)
    @param(_format [in] Texture format. See: `TextureFormat::Enum`.)
-   @param(_textureFlags [in] Texture creation (see `BGFX_TEXTURE_*`.), and
-     sampler (see `BGFX_SAMPLER_*`) flags. Default texture sampling mode is
-     linear, and wrap mode is repeat.
+   @param(_textureFlags [in] Texture creation (see `BGFX_TEXTURE_*`.), and sampler (see `BGFX_SAMPLER_*`)
+     flags. Default texture sampling mode is linear, and wrap mode is repeat.
      - `BGFX_SAMPLER_[U/V/W]_[MIRROR/CLAMP]` - Mirror or clamp to edge wrap
      mode.
      - `BGFX_SAMPLER_[MIN/MAG/MIP]_[POINT/ANISOTROPIC]` - Point or anisotropic
@@ -3055,7 +3015,7 @@ function bgfx_create_frame_buffer_scaled(_ratio: bgfx_backbuffer_ratio_t; _forma
    @param(_destroyTexture [in] If true, textures will be destroyed when
      frame buffer is destroyed.)
    @returns(Frame buffer handle.) *)
-function bgfx_create_frame_buffer_from_handles(_num: UInt8; _handles: Pbgfx_texture_handle_t; _destroyTexture: Boolean): bgfx_frame_buffer_handle_t; cdecl;
+function bgfx_create_frame_buffer_from_handles(_num: UInt8; const _handles: Pbgfx_texture_handle_t; _destroyTexture: Boolean): bgfx_frame_buffer_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_frame_buffer_from_handles';
 
 (* Create MRT frame buffer from texture handles with specific layer and
@@ -3065,7 +3025,7 @@ function bgfx_create_frame_buffer_from_handles(_num: UInt8; _handles: Pbgfx_text
    @param(_destroyTexture [in] If true, textures will be destroyed when
      frame buffer is destroyed.)
    @returns(Frame buffer handle.) *)
-function bgfx_create_frame_buffer_from_attachment(_num: UInt8; _attachment: Pbgfx_attachment_t; _destroyTexture: Boolean): bgfx_frame_buffer_handle_t; cdecl;
+function bgfx_create_frame_buffer_from_attachment(_num: UInt8; const _attachment: Pbgfx_attachment_t; _destroyTexture: Boolean): bgfx_frame_buffer_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_frame_buffer_from_attachment';
 
 (* Create frame buffer for multiple window rendering.
@@ -3085,9 +3045,9 @@ function bgfx_create_frame_buffer_from_nwh(_nwh: Pointer; _width: UInt16; _heigh
 (* Set frame buffer debug name.
    @param(_handle [in] Frame buffer handle.)
    @param(_name [in] Frame buffer name.)
-   @param(_len [in] Frame buffer name length (if length is INT32_MAX, it's
-     expected that _name is zero terminated string.)) *)
-procedure bgfx_set_frame_buffer_name(_handle: bgfx_frame_buffer_handle_t; _name: PUTF8Char; _len: Int32); cdecl;
+   @param(_len [in] Frame buffer name length (if length is INT32_MAX, it's expected
+     that _name is zero terminated string.)) *)
+procedure bgfx_set_frame_buffer_name(_handle: bgfx_frame_buffer_handle_t; const _name: PUTF8Char; _len: Int32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_frame_buffer_name';
 
 (* Obtain texture handle of frame buffer attachment.
@@ -3108,27 +3068,27 @@ procedure bgfx_destroy_frame_buffer(_handle: bgfx_frame_buffer_handle_t); cdecl;
    return the same handle, but the handle reference count will be
    incremented. This means that the same number of `bgfx::destroyUniform`
    must be called to properly destroy the uniform.
+
    2. Predefined uniforms (declared in `bgfx_shader.sh`):
-   - `u_viewRect vec4(x, y, width, height)` - view rectangle for current
-   view, in pixels.
-   - `u_viewTexel vec4(1.0/width, 1.0/height, undef, undef)` - inverse
-   width and height
-   - `u_view mat4` - view matrix
-   - `u_invView mat4` - inverted view matrix
-   - `u_proj mat4` - projection matrix
-   - `u_invProj mat4` - inverted projection matrix
-   - `u_viewProj mat4` - concatenated view projection matrix
-   - `u_invViewProj mat4` - concatenated inverted view projection matrix
-   - `u_model mat4[BGFX_CONFIG_MAX_BONES]` - array of model matrices.
-   - `u_modelView mat4` - concatenated model view matrix, only first
-   model matrix from array is used.
-   - `u_modelViewProj mat4` - concatenated model view projection matrix.
-   - `u_alphaRef float` - alpha reference value for alpha test.
+   @unorderedList(
+     @item(`u_viewRect vec4(x, y, width, height)` - view rectangle for current view, in pixels.)
+     @item(`u_viewTexel vec4(1.0/width, 1.0/height, undef, undef)` - inverse width and height)
+     @item(`u_view mat4` - view matrix)
+     @item(`u_invView mat4` - inverted view matrix)
+     @item(`u_proj mat4` - projection matrix)
+     @item(`u_invProj mat4` - inverted projection matrix)
+     @item(`u_viewProj mat4` - concatenated view projection matrix)
+     @item(`u_invViewProj mat4` - concatenated inverted view projection matrix)
+     @item(`u_model mat4[BGFX_CONFIG_MAX_BONES]` - array of model matrices.)
+     @item(`u_modelView mat4` - concatenated model view matrix, only first model matrix from array is used.)
+     @item(`u_modelViewProj mat4` - concatenated model view projection matrix.)
+     @item(`u_alphaRef float` - alpha reference value for alpha test.)
+   )
    @param(_name [in] Uniform name in shader.)
    @param(_type [in] Type of uniform (See: `bgfx::UniformType`).)
    @param(_num [in] Number of elements in array.)
    @returns(Handle to uniform object.) *)
-function bgfx_create_uniform(_name: PUTF8Char; _type: bgfx_uniform_type_t; _num: UInt16): bgfx_uniform_handle_t; cdecl;
+function bgfx_create_uniform(const _name: PUTF8Char; _type: bgfx_uniform_type_t; _num: UInt16): bgfx_uniform_handle_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_create_uniform';
 
 (* Retrieve uniform info.
@@ -3181,7 +3141,7 @@ procedure bgfx_set_palette_color_rgba8(_index: UInt8; _rgba: UInt32); cdecl;
    +------ view id
    @param(_id [in] View id.)
    @param(_name [in] View name.) *)
-procedure bgfx_set_view_name(_id: bgfx_view_id_t; _name: PUTF8Char); cdecl;
+procedure bgfx_set_view_name(_id: bgfx_view_id_t; const _name: PUTF8Char); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_view_name';
 
 (* Set view rectangle. Draw primitive outside view will be clipped.
@@ -3197,8 +3157,8 @@ procedure bgfx_set_view_rect(_id: bgfx_view_id_t; _x: UInt16; _y: UInt16; _width
    @param(_id [in] View id.)
    @param(_x [in] Position x from the left corner of the window.)
    @param(_y [in] Position y from the top corner of the window.)
-   @param(_ratio [in] Width and height will be set in respect to back-buffer
-     size. See: `BackbufferRatio::Enum`.) *)
+   @param(_ratio [in] Width and height will be set in respect to back-buffer size.
+     See: `BackbufferRatio::Enum`.) *)
 procedure bgfx_set_view_rect_ratio(_id: bgfx_view_id_t; _x: UInt16; _y: UInt16; _ratio: bgfx_backbuffer_ratio_t); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_view_rect_ratio';
 
@@ -3264,7 +3224,7 @@ procedure bgfx_set_view_frame_buffer(_id: bgfx_view_id_t; _handle: bgfx_frame_bu
    @param(_id [in] View id.)
    @param(_view [in] View matrix.)
    @param(_proj [in] Projection matrix.) *)
-procedure bgfx_set_view_transform(_id: bgfx_view_id_t; _view: Pointer; _proj: Pointer); cdecl;
+procedure bgfx_set_view_transform(_id: bgfx_view_id_t; const _view: Pointer; const _proj: Pointer); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_view_transform';
 
 (* Post submit view reordering.
@@ -3272,7 +3232,7 @@ procedure bgfx_set_view_transform(_id: bgfx_view_id_t; _view: Pointer; _proj: Po
    @param(_num [in] Number of views to remap.)
    @param(_order [in] View remap id table. Passing `NULL` will reset view ids
      to default state.) *)
-procedure bgfx_set_view_order(_id: bgfx_view_id_t; _num: UInt16; _order: Pbgfx_view_id_t); cdecl;
+procedure bgfx_set_view_order(_id: bgfx_view_id_t; _num: UInt16; const _order: Pbgfx_view_id_t); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_view_order';
 
 (* Begin submitting draw calls from thread.
@@ -3286,10 +3246,10 @@ function bgfx_encoder_begin(_forThread: Boolean): Pbgfx_encoder_t; cdecl;
 procedure bgfx_encoder_end(_encoder: Pbgfx_encoder_t); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_end';
 
-(* Sets a debug marker. This allows you to group graphics calls together for
-   easy browsing in graphics debugging tools.
+(* Sets a debug marker. This allows you to group graphics calls together for easy browsing in
+   graphics debugging tools.
    @param(_marker [in] Marker string.) *)
-procedure bgfx_encoder_set_marker(_this: Pbgfx_encoder_t; _marker: PUTF8Char); cdecl;
+procedure bgfx_encoder_set_marker(_this: Pbgfx_encoder_t; const _marker: PUTF8Char); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_set_marker';
 
 (* Set render states for draw primitive.
@@ -3325,9 +3285,8 @@ procedure bgfx_encoder_set_condition(_this: Pbgfx_encoder_t; _handle: bgfx_occlu
 
 (* Set stencil test state.
    @param(_fstencil [in] Front stencil state.)
-   @param(_bstencil [in] Back stencil state. If back is set to
-     `BGFX_STENCIL_NONE` _fstencil is applied to both front and back facing
-     primitives.) *)
+   @param(_bstencil [in] Back stencil state. If back is set to `BGFX_STENCIL_NONE`
+     _fstencil is applied to both front and back facing primitives.) *)
 procedure bgfx_encoder_set_stencil(_this: Pbgfx_encoder_t; _fstencil: UInt32; _bstencil: UInt32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_set_stencil';
 
@@ -3355,7 +3314,7 @@ procedure bgfx_encoder_set_scissor_cached(_this: Pbgfx_encoder_t; _cache: UInt16
    @param(_num [in] Number of matrices in array.)
    @returns(Index into matrix cache in case the same model matrix has
      to be used for other draw primitive call.) *)
-function bgfx_encoder_set_transform(_this: Pbgfx_encoder_t; _mtx: Pointer; _num: UInt16): UInt32; cdecl;
+function bgfx_encoder_set_transform(_this: Pbgfx_encoder_t; const _mtx: Pointer; _num: UInt16): UInt32; cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_set_transform';
 
 (* Set model matrix from matrix cache for draw primitive.
@@ -3378,7 +3337,7 @@ function bgfx_encoder_alloc_transform(_this: Pbgfx_encoder_t; _transform: Pbgfx_
    @param(_value [in] Pointer to uniform data.)
    @param(_num [in] Number of elements. Passing `UINT16_MAX` will
      use the _num passed on uniform creation.) *)
-procedure bgfx_encoder_set_uniform(_this: Pbgfx_encoder_t; _handle: bgfx_uniform_handle_t; _value: Pointer; _num: UInt16); cdecl;
+procedure bgfx_encoder_set_uniform(_this: Pbgfx_encoder_t; _handle: bgfx_uniform_handle_t; const _value: Pointer; _num: UInt16); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_set_uniform';
 
 (* Set index buffer for draw primitive.
@@ -3399,7 +3358,7 @@ procedure bgfx_encoder_set_dynamic_index_buffer(_this: Pbgfx_encoder_t; _handle:
    @param(_tib [in] Transient index buffer.)
    @param(_firstIndex [in] First index to render.)
    @param(_numIndices [in] Number of indices to render.) *)
-procedure bgfx_encoder_set_transient_index_buffer(_this: Pbgfx_encoder_t; _tib: Pbgfx_transient_index_buffer_t; _firstIndex: UInt32; _numIndices: UInt32); cdecl;
+procedure bgfx_encoder_set_transient_index_buffer(_this: Pbgfx_encoder_t; const _tib: Pbgfx_transient_index_buffer_t; _firstIndex: UInt32; _numIndices: UInt32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_set_transient_index_buffer';
 
 (* Set vertex buffer for draw primitive.
@@ -3426,7 +3385,7 @@ procedure bgfx_encoder_set_dynamic_vertex_buffer(_this: Pbgfx_encoder_t; _stream
    @param(_startVertex [in] First vertex to render.)
    @param(_numVertices [in] Number of vertices to render.)
    @param(_layoutHandle [in] Vertex layout for aliasing vertex buffer.) *)
-procedure bgfx_encoder_set_transient_vertex_buffer(_this: Pbgfx_encoder_t; _stream: UInt8; _tvb: Pbgfx_transient_vertex_buffer_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
+procedure bgfx_encoder_set_transient_vertex_buffer(_this: Pbgfx_encoder_t; _stream: UInt8; const _tvb: Pbgfx_transient_vertex_buffer_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_set_transient_vertex_buffer';
 
 (* Set number of vertices for auto generated vertices use in conjuction
@@ -3441,7 +3400,7 @@ procedure bgfx_encoder_set_vertex_count(_this: Pbgfx_encoder_t; _numVertices: UI
    @param(_idb [in] Transient instance data buffer.)
    @param(_start [in] First instance data.)
    @param(_num [in] Number of data instances.) *)
-procedure bgfx_encoder_set_instance_data_buffer(_this: Pbgfx_encoder_t; _idb: Pbgfx_instance_data_buffer_t; _start: UInt32; _num: UInt32); cdecl;
+procedure bgfx_encoder_set_instance_data_buffer(_this: Pbgfx_encoder_t; const _idb: Pbgfx_instance_data_buffer_t; _start: UInt32; _num: UInt32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_set_instance_data_buffer';
 
 (* Set instance data buffer for draw primitive.
@@ -3492,8 +3451,7 @@ procedure bgfx_encoder_touch(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t); cdecl
    @param(_id [in] View id.)
    @param(_program [in] Program.)
    @param(_depth [in] Depth for sorting.)
-   @param(_preserveState [in] Preserve internal draw state for next draw call
-     submit.) *)
+   @param(_preserveState [in] Preserve internal draw state for next draw call submit.) *)
 procedure bgfx_encoder_submit(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _depth: UInt32; _preserveState: Boolean); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_submit';
 
@@ -3502,8 +3460,7 @@ procedure bgfx_encoder_submit(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _prog
    @param(_program [in] Program.)
    @param(_occlusionQuery [in] Occlusion query.)
    @param(_depth [in] Depth for sorting.)
-   @param(_preserveState [in] Preserve internal draw state for next draw call
-     submit.) *)
+   @param(_preserveState [in] Preserve internal draw state for next draw call submit.) *)
 procedure bgfx_encoder_submit_occlusion_query(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _occlusionQuery: bgfx_occlusion_query_handle_t; _depth: UInt32; _preserveState: Boolean); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_submit_occlusion_query';
 
@@ -3515,8 +3472,7 @@ procedure bgfx_encoder_submit_occlusion_query(_this: Pbgfx_encoder_t; _id: bgfx_
    @param(_start [in] First element in indirect buffer.)
    @param(_num [in] Number of dispatches.)
    @param(_depth [in] Depth for sorting.)
-   @param(_preserveState [in] Preserve internal draw state for next draw call
-     submit.) *)
+   @param(_preserveState [in] Preserve internal draw state for next draw call submit.) *)
 procedure bgfx_encoder_submit_indirect(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16; _depth: UInt32; _preserveState: Boolean); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_submit_indirect';
 
@@ -3589,8 +3545,7 @@ procedure bgfx_encoder_discard(_this: Pbgfx_encoder_t; _flags: UInt8); cdecl;
 
 (* Blit 2D texture region between two 2D textures.
 
-   Destination texture must be created with `BGFX_TEXTURE_BLIT_DST`
-   flag.
+   Destination texture must be created with `BGFX_TEXTURE_BLIT_DST` flag.
 
    Availability depends on: `BGFX_CAPS_TEXTURE_BLIT`.
    @param(_id [in] View id.)
@@ -3598,20 +3553,20 @@ procedure bgfx_encoder_discard(_this: Pbgfx_encoder_t; _flags: UInt8); cdecl;
    @param(_dstMip [in] Destination texture mip level.)
    @param(_dstX [in] Destination texture X position.)
    @param(_dstY [in] Destination texture Y position.)
-   @param(_dstZ [in] If texture is 2D this argument should be 0. If destination
-     texture is cube this argument represents destination texture cube face. For
-     3D texture this argument represents destination texture Z position.)
+   @param(_dstZ [in] If texture is 2D this argument should be 0. If destination texture is cube
+     this argument represents destination texture cube face. For 3D texture this argument
+     represents destination texture Z position.)
    @param(_src [in] Source texture handle.)
    @param(_srcMip [in] Source texture mip level.)
    @param(_srcX [in] Source texture X position.)
    @param(_srcY [in] Source texture Y position.)
-   @param(_srcZ [in] If texture is 2D this argument should be 0. If source
-     texture is cube this argument represents source texture cube face. For 3D
-     texture this argument represents source texture Z position.)
+   @param(_srcZ [in] If texture is 2D this argument should be 0. If source texture is cube
+     this argument represents source texture cube face. For 3D texture this argument
+     represents source texture Z position.)
    @param(_width [in] Width of region.)
    @param(_height [in] Height of region.)
-   @param(_depth [in] If texture is 3D this argument represents depth of region,
-     otherwise it's unused.) *)
+   @param(_depth [in] If texture is 3D this argument represents depth of region, otherwise it's
+     unused.) *)
 procedure bgfx_encoder_blit(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _dst: bgfx_texture_handle_t; _dstMip: UInt8; _dstX: UInt16; _dstY: UInt16; _dstZ: UInt16; _src: bgfx_texture_handle_t; _srcMip: UInt8; _srcX: UInt16; _srcY: UInt16; _srcZ: UInt16; _width: UInt16; _height: UInt16; _depth: UInt16); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_blit';
 
@@ -3619,13 +3574,11 @@ procedure bgfx_encoder_blit(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _dst: b
 
    `bgfx::CallbackI::screenShot` must be implemented.
 
-   Frame buffer handle must be created with OS' target native window
-   handle.
-   @param(_handle [in] Frame buffer handle. If handle is `BGFX_INVALID_HANDLE`
-     request will be made for main window back buffer.)
-   @param(_filePath [in] Will be passed to `bgfx::CallbackI::screenShot`
-     callback.) *)
-procedure bgfx_request_screen_shot(_handle: bgfx_frame_buffer_handle_t; _filePath: PUTF8Char); cdecl;
+   Frame buffer handle must be created with OS' target native window handle.
+   @param(_handle [in] Frame buffer handle. If handle is `BGFX_INVALID_HANDLE` request will be
+     made for main window back buffer.)
+   @param(_filePath [in] Will be passed to `bgfx::CallbackI::screenShot` callback.) *)
+procedure bgfx_request_screen_shot(_handle: bgfx_frame_buffer_handle_t; const _filePath: PUTF8Char); cdecl;
   external BGFX_LIB_NAME name 'bgfx_request_screen_shot';
 
 (* Render frame.
@@ -3647,7 +3600,7 @@ function bgfx_render_frame(_msecs: Int32): bgfx_render_frame_t; cdecl;
 
    Must be called before `bgfx::init`.
    @param(_data [in] Platform data.) *)
-procedure bgfx_set_platform_data(_data: Pbgfx_platform_data_t); cdecl;
+procedure bgfx_set_platform_data(const _data: Pbgfx_platform_data_t); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_platform_data';
 
 (* Get internal data for interop.
@@ -3668,8 +3621,8 @@ function bgfx_get_internal_data(): Pbgfx_internal_data_t; cdecl;
    Must be called only on render thread.
    @param(_handle [in] Texture handle.)
    @param(_ptr [in] Native API pointer to texture.)
-   @returns(Native API pointer to texture. If result is 0, texture is not
-     created yet from the main thread.) *)
+   @returns(Native API pointer to texture. If result is 0, texture is not created
+     yet from the main thread.) *)
 function bgfx_override_internal_texture_ptr(_handle: bgfx_texture_handle_t; _ptr: UIntPtr): UIntPtr; cdecl;
   external BGFX_LIB_NAME name 'bgfx_override_internal_texture_ptr';
 
@@ -3679,30 +3632,29 @@ function bgfx_override_internal_texture_ptr(_handle: bgfx_texture_handle_t; _ptr
    It's expected you understand some bgfx internals before you
    use this call.
 
-   @returns(Native API pointer to texture. If result is 0, texture is not
-     created yet from the main thread.)
+   @returns(Native API pointer to texture. If result is 0, texture is not created yet from the
+     main thread.)
    Must be called only on render thread.
    @param(_handle [in] Texture handle.)
    @param(_width [in] Width.)
    @param(_height [in] Height.)
    @param(_numMips [in] Number of mip-maps.)
    @param(_format [in] Texture format. See: `TextureFormat::Enum`.)
-   @param(_flags [in] Texture creation (see `BGFX_TEXTURE_*`.), and sampler (see
-     `BGFX_SAMPLER_*`) flags. Default texture sampling mode is linear, and wrap
-     mode is repeat.
+   @param(_flags [in] Texture creation (see `BGFX_TEXTURE_*`.), and sampler (see `BGFX_SAMPLER_*`)
+     flags. Default texture sampling mode is linear, and wrap mode is repeat.
      - `BGFX_SAMPLER_[U/V/W]_[MIRROR/CLAMP]` - Mirror or clamp to edge wrap
      mode.
      - `BGFX_SAMPLER_[MIN/MAG/MIP]_[POINT/ANISOTROPIC]` - Point or anisotropic
      sampling.)
-   @returns(Native API pointer to texture. If result is 0, texture is not
-     created yet from the main thread.) *)
+   @returns(Native API pointer to texture. If result is 0, texture is not created
+     yet from the main thread.) *)
 function bgfx_override_internal_texture(_handle: bgfx_texture_handle_t; _width: UInt16; _height: UInt16; _numMips: UInt8; _format: bgfx_texture_format_t; _flags: UInt64): UIntPtr; cdecl;
   external BGFX_LIB_NAME name 'bgfx_override_internal_texture';
 
-(* Sets a debug marker. This allows you to group graphics calls together for
-   easy browsing in graphics debugging tools.
+(* Sets a debug marker. This allows you to group graphics calls together for easy browsing in
+   graphics debugging tools.
    @param(_marker [in] Marker string.) *)
-procedure bgfx_set_marker(_marker: PUTF8Char); cdecl;
+procedure bgfx_set_marker(const _marker: PUTF8Char); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_marker';
 
 (* Set render states for draw primitive.
@@ -3738,9 +3690,8 @@ procedure bgfx_set_condition(_handle: bgfx_occlusion_query_handle_t; _visible: B
 
 (* Set stencil test state.
    @param(_fstencil [in] Front stencil state.)
-   @param(_bstencil [in] Back stencil state. If back is set to
-     `BGFX_STENCIL_NONE` _fstencil is applied to both front and back facing
-     primitives.) *)
+   @param(_bstencil [in] Back stencil state. If back is set to `BGFX_STENCIL_NONE`
+     _fstencil is applied to both front and back facing primitives.) *)
 procedure bgfx_set_stencil(_fstencil: UInt32; _bstencil: UInt32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_stencil';
 
@@ -3768,7 +3719,7 @@ procedure bgfx_set_scissor_cached(_cache: UInt16); cdecl;
    @param(_num [in] Number of matrices in array.)
    @returns(Index into matrix cache in case the same model matrix has
      to be used for other draw primitive call.) *)
-function bgfx_set_transform(_mtx: Pointer; _num: UInt16): UInt32; cdecl;
+function bgfx_set_transform(const _mtx: Pointer; _num: UInt16): UInt32; cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_transform';
 
 (* Set model matrix from matrix cache for draw primitive.
@@ -3791,7 +3742,7 @@ function bgfx_alloc_transform(_transform: Pbgfx_transform_t; _num: UInt16): UInt
    @param(_value [in] Pointer to uniform data.)
    @param(_num [in] Number of elements. Passing `UINT16_MAX` will
      use the _num passed on uniform creation.) *)
-procedure bgfx_set_uniform(_handle: bgfx_uniform_handle_t; _value: Pointer; _num: UInt16); cdecl;
+procedure bgfx_set_uniform(_handle: bgfx_uniform_handle_t; const _value: Pointer; _num: UInt16); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_uniform';
 
 (* Set index buffer for draw primitive.
@@ -3812,7 +3763,7 @@ procedure bgfx_set_dynamic_index_buffer(_handle: bgfx_dynamic_index_buffer_handl
    @param(_tib [in] Transient index buffer.)
    @param(_firstIndex [in] First index to render.)
    @param(_numIndices [in] Number of indices to render.) *)
-procedure bgfx_set_transient_index_buffer(_tib: Pbgfx_transient_index_buffer_t; _firstIndex: UInt32; _numIndices: UInt32); cdecl;
+procedure bgfx_set_transient_index_buffer(const _tib: Pbgfx_transient_index_buffer_t; _firstIndex: UInt32; _numIndices: UInt32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_transient_index_buffer';
 
 (* Set vertex buffer for draw primitive.
@@ -3836,7 +3787,7 @@ procedure bgfx_set_dynamic_vertex_buffer(_stream: UInt8; _handle: bgfx_dynamic_v
    @param(_tvb [in] Transient vertex buffer.)
    @param(_startVertex [in] First vertex to render.)
    @param(_numVertices [in] Number of vertices to render.) *)
-procedure bgfx_set_transient_vertex_buffer(_stream: UInt8; _tvb: Pbgfx_transient_vertex_buffer_t; _startVertex: UInt32; _numVertices: UInt32); cdecl;
+procedure bgfx_set_transient_vertex_buffer(_stream: UInt8; const _tvb: Pbgfx_transient_vertex_buffer_t; _startVertex: UInt32; _numVertices: UInt32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_transient_vertex_buffer';
 
 (* Set number of vertices for auto generated vertices use in conjuction
@@ -3851,7 +3802,7 @@ procedure bgfx_set_vertex_count(_numVertices: UInt32); cdecl;
    @param(_idb [in] Transient instance data buffer.)
    @param(_start [in] First instance data.)
    @param(_num [in] Number of data instances.) *)
-procedure bgfx_set_instance_data_buffer(_idb: Pbgfx_instance_data_buffer_t; _start: UInt32; _num: UInt32); cdecl;
+procedure bgfx_set_instance_data_buffer(const _idb: Pbgfx_instance_data_buffer_t; _start: UInt32; _num: UInt32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_instance_data_buffer';
 
 (* Set instance data buffer for draw primitive.
@@ -3902,8 +3853,7 @@ procedure bgfx_touch(_id: bgfx_view_id_t); cdecl;
    @param(_id [in] View id.)
    @param(_program [in] Program.)
    @param(_depth [in] Depth for sorting.)
-   @param(_preserveState [in] Preserve internal draw state for next draw call
-     submit.) *)
+   @param(_preserveState [in] Preserve internal draw state for next draw call submit.) *)
 procedure bgfx_submit(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _depth: UInt32; _preserveState: Boolean); cdecl;
   external BGFX_LIB_NAME name 'bgfx_submit';
 
@@ -3912,8 +3862,7 @@ procedure bgfx_submit(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _dep
    @param(_program [in] Program.)
    @param(_occlusionQuery [in] Occlusion query.)
    @param(_depth [in] Depth for sorting.)
-   @param(_preserveState [in] Preserve internal draw state for next draw call
-     submit.) *)
+   @param(_preserveState [in] Preserve internal draw state for next draw call submit.) *)
 procedure bgfx_submit_occlusion_query(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _occlusionQuery: bgfx_occlusion_query_handle_t; _depth: UInt32; _preserveState: Boolean); cdecl;
   external BGFX_LIB_NAME name 'bgfx_submit_occlusion_query';
 
@@ -3925,8 +3874,7 @@ procedure bgfx_submit_occlusion_query(_id: bgfx_view_id_t; _program: bgfx_progra
    @param(_start [in] First element in indirect buffer.)
    @param(_num [in] Number of dispatches.)
    @param(_depth [in] Depth for sorting.)
-   @param(_preserveState [in] Preserve internal draw state for next draw call
-     submit.) *)
+   @param(_preserveState [in] Preserve internal draw state for next draw call submit.) *)
 procedure bgfx_submit_indirect(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16; _depth: UInt32; _preserveState: Boolean); cdecl;
   external BGFX_LIB_NAME name 'bgfx_submit_indirect';
 
@@ -3999,8 +3947,7 @@ procedure bgfx_discard(_flags: UInt8); cdecl;
 
 (* Blit 2D texture region between two 2D textures.
 
-   Destination texture must be created with `BGFX_TEXTURE_BLIT_DST`
-   flag.
+   Destination texture must be created with `BGFX_TEXTURE_BLIT_DST` flag.
 
    Availability depends on: `BGFX_CAPS_TEXTURE_BLIT`.
    @param(_id [in] View id.)
@@ -4008,20 +3955,20 @@ procedure bgfx_discard(_flags: UInt8); cdecl;
    @param(_dstMip [in] Destination texture mip level.)
    @param(_dstX [in] Destination texture X position.)
    @param(_dstY [in] Destination texture Y position.)
-   @param(_dstZ [in] If texture is 2D this argument should be 0. If destination
-     texture is cube this argument represents destination texture cube face. For
-     3D texture this argument represents destination texture Z position.)
+   @param(_dstZ [in] If texture is 2D this argument should be 0. If destination texture is cube
+     this argument represents destination texture cube face. For 3D texture this argument
+     represents destination texture Z position.)
    @param(_src [in] Source texture handle.)
    @param(_srcMip [in] Source texture mip level.)
    @param(_srcX [in] Source texture X position.)
    @param(_srcY [in] Source texture Y position.)
-   @param(_srcZ [in] If texture is 2D this argument should be 0. If source
-     texture is cube this argument represents source texture cube face. For 3D
-     texture this argument represents source texture Z position.)
+   @param(_srcZ [in] If texture is 2D this argument should be 0. If source texture is cube
+     this argument represents source texture cube face. For 3D texture this argument
+     represents source texture Z position.)
    @param(_width [in] Width of region.)
    @param(_height [in] Height of region.)
-   @param(_depth [in] If texture is 3D this argument represents depth of region,
-     otherwise it's unused.) *)
+   @param(_depth [in] If texture is 3D this argument represents depth of region, otherwise it's
+     unused.) *)
 procedure bgfx_blit(_id: bgfx_view_id_t; _dst: bgfx_texture_handle_t; _dstMip: UInt8; _dstX: UInt16; _dstY: UInt16; _dstZ: UInt16; _src: bgfx_texture_handle_t; _srcMip: UInt8; _srcX: UInt16; _srcY: UInt16; _srcZ: UInt16; _width: UInt16; _height: UInt16; _depth: UInt16); cdecl;
   external BGFX_LIB_NAME name 'bgfx_blit';
 
