@@ -1,41 +1,43 @@
 {**********************************************************************
-                PilotLogic Software House.
+                Copyright (c) PilotLogic Software House
 
  Package pl_SDL2
  This file is part of CodeTyphon Studio (https://www.pilotlogic.com/)
+
+ ***** BEGIN LICENSE BLOCK *****
+ * Version: LGPL-2 with link exception (Modified LGPL)
+ *
+ * The contents of this file are subject to the 
+ * GNU LIBRARY GENERAL PUBLIC LICENSE Version 2 (the "License");
+ * with the following modification:
+ * 
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this library with independent modules to produce an
+ * executable, regardless of the license terms of these independent modules,
+ * and to copy and distribute the resulting executable under terms of your choice,
+ * provided that you also meet, for each linked independent module, the terms
+ * and conditions of the license of that module. An independent module is a
+ * module which is not derived from or based on this library. If you modify this
+ * library, you may extend this exception to your version of the library, but
+ * you are not obligated to do so. If you do not wish to do so, delete this
+ * exception statement from your version.
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * ***** END LICENSE BLOCK *****
 
  -------
 
   Reference to SDL2 version 2.0.9 stable
   https://www.libsdl.org
 
-
- //----------------------------------------------
-  For Debian, Ubuntu
-    install : apt-get install libsdl2-dev
-    position: /usr/lib/x86_64-linux-gnu/libSDL2.so
-    position: /usr/lib/i386-linux-gnu/libSDL2.so
-
-  For Fedora, RedHat
-    install : dnf install sdl2-devel
-    position: /usr/lib64/libSDL2.so
-    position: /usr/lib/libSDL2.so
-
-  For Mageia
-    install : urpmi lib64sdl2.0-devel
-    position: /usr/lib64/libSDL2.so
-    position: /usr/lib/libSDL2.so
-
-  For FreeBSD
-    install : pkg install sdl2
-    position: \usr\local\lib\libSDL2.so
-
 ***********************************************************************}
-
 
 unit sdl2lib;
 
-{$mode ObjFPC}
 
 interface
 
@@ -48,7 +50,7 @@ uses
       CocoaAll,
       {$ENDIF}
       X, XLib,
-  {$ENDIF}
+  {$ENDIF}     
    dynlibs;
 
 const
@@ -57,7 +59,7 @@ const
   {$elseif defined(DARWIN)}
      SDL_LibName = 'libSDL2.dylib';
   {$ELSE}
-     SDL_LibName = 'libSDL2.so';
+     SDL_LibName = 'libSDL2-2.0.so.0';
   {$ENDIF}
 
   {$IFDEF MACOS}
@@ -121,9 +123,9 @@ const
         patch: UInt8;
       end;
 
-    TTSDL_GetVersion = procedure(ver: PSDL_Version); cdecl;
-    TTSDL_GetRevision = function: PAnsiChar; cdecl;
-    TTSDL_GetRevisionNumber = function: SInt32; cdecl;
+    TTSDL_GetVersion =procedure(ver: PSDL_Version); cdecl;
+    TTSDL_GetRevision=function: PAnsiChar; cdecl;
+    TTSDL_GetRevisionNumber=function : SInt32; cdecl;
 
     procedure SDL_VERSION(Out x: TSDL_Version);
     function  SDL_VERSIONNUM(X,Y,Z: UInt32): Cardinal;
@@ -680,12 +682,12 @@ type
 //----------- sdl_rwops.h ------------------------------
 
     const
-      SDL_RWOPS_UNKNOWN   = 0;  {* Unknown stream type *}
-      SDL_RWOPS_WINFILE   = 1;  {* Win32 file *}
-      SDL_RWOPS_STDFILE   = 2;  {* Stdio file *}
-      SDL_RWOPS_JNIFILE   = 3;  {* Android asset *}
-      SDL_RWOPS_MEMORY    = 4;  {* Memory stream *}
-      SDL_RWOPS_MEMORY_RO = 5;  {* Read-Only memory stream *}
+      SDL_RWOPS_UNKNOWN	  = 0;	{* Unknown stream type *}
+      SDL_RWOPS_WINFILE	  = 1;	{* Win32 file *}
+      SDL_RWOPS_STDFILE	  = 2;	{* Stdio file *}
+      SDL_RWOPS_JNIFILE	  = 3;	{* Android asset *}
+      SDL_RWOPS_MEMORY    =	4;	{* Memory stream *}
+      SDL_RWOPS_MEMORY_RO =	5;	{* Read-Only memory stream *}
 
       RW_SEEK_SET = 0;       {**< Seek from the beginning of data *}
       RW_SEEK_CUR = 1;       {**< Seek relative to current read point *}
@@ -701,13 +703,13 @@ type
 
       TStdio = record
         autoclose: TSDL_Bool;
-      fp: file;
+    	fp: file;
       end;
 
       TMem = record
         base: PUInt8;
-      here: PUInt8;
-      stop: PUInt8;
+    	here: PUInt8;
+    	stop: PUInt8;
       end;
 
       TUnknown = record
@@ -728,8 +730,8 @@ type
 
       TWindowsIOBuffer = record
         data: Pointer;
-      size: size_t;
-      left: size_t;
+    	size: size_t;
+    	left: size_t;
       end;
 
       TWindowsIO = record
@@ -747,16 +749,16 @@ type
 
         _type: UInt32;
 
-      case Integer of
-        0: (stdio: TStdio);
-        1: (mem: TMem);
-        2: (unknown: TUnknown);
-        {$IFDEF ANDROID}
-        3: (androidio: TAndroidIO);
-        {$ENDIF}
-        {$IFDEF WINDOWS}
-        3: (windowsio: TWindowsIO);
-        {$ENDIF}
+    	case Integer of
+    	  0: (stdio: TStdio);
+    	  1: (mem: TMem);
+    	  2: (unknown: TUnknown);
+    	  {$IFDEF ANDROID}
+    	  3: (androidio: TAndroidIO);
+    	  {$ENDIF}
+    	  {$IFDEF WINDOWS}
+    	  3: (windowsio: TWindowsIO);
+    	  {$ENDIF}
       end;
 
 
@@ -2136,11 +2138,11 @@ type
                   SDL_SYSTEM_CURSOR_HAND = 11;      // Hand
                   SDL_NUM_SYSTEM_CURSORS = 12;
 
-                  SDL_BUTTON_LEFT = 1;
-                  SDL_BUTTON_MIDDLE = 2;
-                  SDL_BUTTON_RIGHT  = 3;
-                  SDL_BUTTON_X1     = 4;
-                  SDL_BUTTON_X2     = 5;
+                  SDL_BUTTON_LEFT	= 1;
+                  SDL_BUTTON_MIDDLE	= 2;
+                  SDL_BUTTON_RIGHT	= 3;
+                  SDL_BUTTON_X1	    = 4;
+                  SDL_BUTTON_X2	    = 5;
                   SDL_BUTTON_LMASK  = 1 shl ((SDL_BUTTON_LEFT) - 1);
                   SDL_BUTTON_MMASK  = 1 shl ((SDL_BUTTON_MIDDLE) - 1);
                   SDL_BUTTON_RMASK  = 1 shl ((SDL_BUTTON_RIGHT) - 1);
@@ -2838,29 +2840,29 @@ type
 
                     type
                       TSDL_LogCategory = (SDL_LOG_CATEGORY_APPLICATION,
-                                SDL_LOG_CATEGORY_ERROR,
-                                SDL_LOG_CATEGORY_ASSERT,
-                                SDL_LOG_CATEGORY_SYSTEM,
-                                SDL_LOG_CATEGORY_AUDIO,
-                                  SDL_LOG_CATEGORY_VIDEO,
-                                SDL_LOG_CATEGORY_RENDER,
-                                SDL_LOG_CATEGORY_INPUT,
-                                SDL_LOG_CATEGORY_TEST,
+                    					  SDL_LOG_CATEGORY_ERROR,
+                    					  SDL_LOG_CATEGORY_ASSERT,
+                    					  SDL_LOG_CATEGORY_SYSTEM,
+                    					  SDL_LOG_CATEGORY_AUDIO,
+                    				      SDL_LOG_CATEGORY_VIDEO,
+                    					  SDL_LOG_CATEGORY_RENDER,
+                    					  SDL_LOG_CATEGORY_INPUT,
+                    					  SDL_LOG_CATEGORY_TEST,
 
-                                {* Reserved for future SDL library use *}
-                                SDL_LOG_CATEGORY_RESERVED1,
-                                SDL_LOG_CATEGORY_RESERVED2,
-                                SDL_LOG_CATEGORY_RESERVED3,
-                                SDL_LOG_CATEGORY_RESERVED4,
-                                SDL_LOG_CATEGORY_RESERVED5,
-                                SDL_LOG_CATEGORY_RESERVED6,
-                                SDL_LOG_CATEGORY_RESERVED7,
-                                SDL_LOG_CATEGORY_RESERVED8,
-                                SDL_LOG_CATEGORY_RESERVED9,
-                                SDL_LOG_CATEGORY_RESERVED10,
+                    					  {* Reserved for future SDL library use *}
+                    					  SDL_LOG_CATEGORY_RESERVED1,
+                    					  SDL_LOG_CATEGORY_RESERVED2,
+                    					  SDL_LOG_CATEGORY_RESERVED3,
+                    					  SDL_LOG_CATEGORY_RESERVED4,
+                    					  SDL_LOG_CATEGORY_RESERVED5,
+                    					  SDL_LOG_CATEGORY_RESERVED6,
+                    					  SDL_LOG_CATEGORY_RESERVED7,
+                    					  SDL_LOG_CATEGORY_RESERVED8,
+                    					  SDL_LOG_CATEGORY_RESERVED9,
+                    					  SDL_LOG_CATEGORY_RESERVED10,
 
-                                {* Beyond this point is reserved for application use *}
-                                SDL_LOG_CATEGORY_CUSTOM);
+                    					  {* Beyond this point is reserved for application use *}
+                    					  SDL_LOG_CATEGORY_CUSTOM);
 
 
 
@@ -3267,10 +3269,10 @@ type
                       SDL_INIT_NOPARACHUTE    = $00100000;
                       SDL_INIT_EVERYTHING     = SDL_INIT_TIMER    or
                                                 SDL_INIT_AUDIO    or
-                            SDL_INIT_VIDEO    or
-                            SDL_INIT_JOYSTICK or
-                            SDL_INIT_HAPTIC   or
-                            SDL_INIT_GAMECONTROLLER;
+                    				SDL_INIT_VIDEO    or
+                    				SDL_INIT_JOYSTICK or
+                    				SDL_INIT_HAPTIC   or
+                    				SDL_INIT_GAMECONTROLLER;
 
                      type
 
@@ -3995,12 +3997,12 @@ end;
 //----------- sdl_video -------------------
 function SDL_WindowPos_IsUndefined(X: Variant): Variant;
 begin
-  Result := (X and QWord($FFFF0000)) = SDL_WINDOWPOS_UNDEFINED_MASK;
+  Result := (X and $FFFF000) = SDL_WINDOWPOS_UNDEFINED_MASK;
 end;
 
 function SDL_WindowPos_IsCentered(X: Variant): Variant;
 begin
-  Result := (X and QWord($FFFF0000)) = SDL_WINDOWPOS_CENTERED_MASK;
+  Result := (X and $FFFF000) = SDL_WINDOWPOS_CENTERED_MASK;
 end;
 
 //----------- sdl_events -------------------
@@ -4044,7 +4046,10 @@ begin
   result := dynlibs.GetProcedureAddress(VarSDL2LibHandle, AnsiString(aProcName));
 end;
 //.....................................
-  var xLibName: String;
+  var ss: String;
+ {$IF DEFINED(UNIX) and (NOT DEFINED(DARWIN))}
+     ssl,ssp:integer;
+ {$ENDIF}
 begin
   if VarSDL2LibHandle>InvalidLibHandle then
     begin
@@ -4053,8 +4058,22 @@ begin
     end;
 
   result:=false;
-  xLibName:=aLibName;
-  VarSDL2LibHandle := dynlibs.LoadLibrary(xLibName);
+  ss:=aLibName;
+  VarSDL2LibHandle := dynlibs.LoadLibrary(ss);
+  
+  //.....................................
+  // On UNIX If Library NOT load, try to load .so file
+  {$IF DEFINED(UNIX) and (NOT DEFINED(DARWIN))}
+   if VarSDL2LibHandle=0 then
+    begin
+      ssl:=length(ss);
+      ssp:=Pos('.so.',ss);
+      if ssp>0 then delete(ss,ssp,ssl-ssp+1);
+
+      VarSDL2LibHandle := dynlibs.LoadLibrary(ss+'.so');
+    end;
+  {$ENDIF}
+  //.....................................
 
   if VarSDL2LibHandle=0 then Exit;
 
