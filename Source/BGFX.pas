@@ -23,7 +23,7 @@ const
   {$endif}
 
 const
-  BGFX_API_VERSION = 103;
+  BGFX_API_VERSION = UInt32(115);
   (*
    * Color RGB/alpha/depth write. When it's not specified write will be disabled.
    *)
@@ -643,6 +643,8 @@ const
 
 type
   // Forward declarations
+  PUInt8 = ^UInt8;
+  PInt32 = ^Int32;
   Pbgfx_encoder_s = Pointer;
   PPbgfx_encoder_s = ^Pbgfx_encoder_s;
   Pbgfx_allocator_interface_s = ^bgfx_allocator_interface_s;
@@ -682,6 +684,7 @@ type
   Pbgfx_stats_s = ^bgfx_stats_s;
   Pbgfx_vertex_layout_s = ^bgfx_vertex_layout_s;
   Pbgfx_interface_vtbl = ^bgfx_interface_vtbl;
+  Pbgfx_interface_vtbl_t = ^bgfx_interface_vtbl;
 
   (* Fatal error enum. *)
   bgfx_fatal = (
@@ -705,26 +708,30 @@ type
   bgfx_renderer_type = (
     (* ( 0) No rendering. *)
     BGFX_RENDERER_TYPE_NOOP = 0,
-    (* ( 1) Direct3D 9.0 *)
-    BGFX_RENDERER_TYPE_DIRECT3D9 = 1,
-    (* ( 2) Direct3D 11.0 *)
-    BGFX_RENDERER_TYPE_DIRECT3D11 = 2,
-    (* ( 3) Direct3D 12.0 *)
-    BGFX_RENDERER_TYPE_DIRECT3D12 = 3,
-    (* ( 4) GNM *)
-    BGFX_RENDERER_TYPE_GNM = 4,
-    (* ( 5) Metal *)
-    BGFX_RENDERER_TYPE_METAL = 5,
-    (* ( 6) NVN *)
-    BGFX_RENDERER_TYPE_NVN = 6,
-    (* ( 7) OpenGL ES 2.0+ *)
-    BGFX_RENDERER_TYPE_OPENGLES = 7,
-    (* ( 8) OpenGL 2.1+ *)
-    BGFX_RENDERER_TYPE_OPENGL = 8,
-    (* ( 9) Vulkan *)
-    BGFX_RENDERER_TYPE_VULKAN = 9,
-    (* ( 9) Vulkan *)
-    BGFX_RENDERER_TYPE_COUNT = 10);
+    (* ( 1) AGC *)
+    BGFX_RENDERER_TYPE_AGC = 1,
+    (* ( 2) Direct3D 9.0 *)
+    BGFX_RENDERER_TYPE_DIRECT3D9 = 2,
+    (* ( 3) Direct3D 11.0 *)
+    BGFX_RENDERER_TYPE_DIRECT3D11 = 3,
+    (* ( 4) Direct3D 12.0 *)
+    BGFX_RENDERER_TYPE_DIRECT3D12 = 4,
+    (* ( 5) GNM *)
+    BGFX_RENDERER_TYPE_GNM = 5,
+    (* ( 6) Metal *)
+    BGFX_RENDERER_TYPE_METAL = 6,
+    (* ( 7) NVN *)
+    BGFX_RENDERER_TYPE_NVN = 7,
+    (* ( 8) OpenGL ES 2.0+ *)
+    BGFX_RENDERER_TYPE_OPENGLES = 8,
+    (* ( 9) OpenGL 2.1+ *)
+    BGFX_RENDERER_TYPE_OPENGL = 9,
+    (* (10) Vulkan *)
+    BGFX_RENDERER_TYPE_VULKAN = 10,
+    (* (11) WebGPU *)
+    BGFX_RENDERER_TYPE_WEBGPU = 11,
+    (* (11) WebGPU *)
+    BGFX_RENDERER_TYPE_COUNT = 12);
   Pbgfx_renderer_type = ^bgfx_renderer_type;
   (* Renderer backend type enum. *)
   bgfx_renderer_type_t = bgfx_renderer_type;
@@ -1083,7 +1090,7 @@ type
   bgfx_topology_convert_t = (
     (* ( 0) Flip winding order of triangle list. *)
     BGFX_TOPOLOGY_CONVERT_TRI_LIST_FLIP_WINDING = 0,
-    (* ( 1) Flip winding order of trinagle strip. *)
+    (* ( 1) Flip winding order of triangle strip. *)
     BGFX_TOPOLOGY_CONVERT_TRI_STRIP_FLIP_WINDING = 1,
     (* ( 2) Convert triangle list to line list. *)
     BGFX_TOPOLOGY_CONVERT_TRI_LIST_TO_LINE_LIST = 2,
@@ -1149,8 +1156,7 @@ type
     BGFX_RENDER_FRAME_NO_CONTEXT = 0,
     (* ( 1) Renderer context is created and rendering. *)
     BGFX_RENDER_FRAME_RENDER = 1,
-    (* ( 2) Renderer context wait for main thread signal timed out without
-       rendering. *)
+    (* ( 2) Renderer context wait for main thread signal timed out without rendering. *)
     BGFX_RENDER_FRAME_TIMEOUT = 2,
     (* ( 3) Renderer context is getting destroyed. *)
     BGFX_RENDER_FRAME_EXITING = 3,
@@ -1158,53 +1164,44 @@ type
     BGFX_RENDER_FRAME_COUNT = 4);
   Pbgfx_render_frame = ^bgfx_render_frame_t;
 
-  (* *)
   bgfx_view_id_t = UInt16;
   Pbgfx_view_id_t = ^bgfx_view_id_t;
 
-  (* *)
   bgfx_allocator_interface_s = record
     vtbl: Pbgfx_allocator_vtbl_s;
   end;
 
-  (* *)
   bgfx_allocator_interface_t = bgfx_allocator_interface_s;
   Pbgfx_allocator_interface_t = ^bgfx_allocator_interface_t;
 
-  (* *)
   bgfx_allocator_vtbl_s = record
-    realloc: function(_this: Pbgfx_allocator_interface_t; _ptr: Pointer; _size: NativeUInt; _align: NativeUInt; _file: PUTF8Char; _line: UInt32): Pointer; cdecl;
+    realloc: function(_this: Pbgfx_allocator_interface_t; _ptr: Pointer; _size: NativeUInt; _align: NativeUInt; const _file: PUTF8Char; _line: UInt32): Pointer; cdecl;
   end;
 
-  (* *)
   bgfx_allocator_vtbl_t = bgfx_allocator_vtbl_s;
 
-  (* *)
   bgfx_callback_interface_s = record
     vtbl: Pbgfx_callback_vtbl_s;
   end;
 
-  (* *)
   bgfx_callback_interface_t = bgfx_callback_interface_s;
   Pbgfx_callback_interface_t = ^bgfx_callback_interface_t;
 
-  (* *)
   bgfx_callback_vtbl_s = record
-    fatal: procedure(_this: Pbgfx_callback_interface_t; _filePath: PUTF8Char; _line: UInt16; _code: bgfx_fatal_t; _str: PUTF8Char); cdecl;
-    trace_vargs: procedure(_this: Pbgfx_callback_interface_t; _filePath: PUTF8Char; _line: UInt16; _format: PUTF8Char; _argList: Pointer); cdecl;
-    profiler_begin: procedure(_this: Pbgfx_callback_interface_t; _name: PUTF8Char; _abgr: UInt32; _filePath: PUTF8Char; _line: UInt16); cdecl;
-    profiler_begin_literal: procedure(_this: Pbgfx_callback_interface_t; _name: PUTF8Char; _abgr: UInt32; _filePath: PUTF8Char; _line: UInt16); cdecl;
+    fatal: procedure(_this: Pbgfx_callback_interface_t; const _filePath: PUTF8Char; _line: UInt16; _code: bgfx_fatal_t; const _str: PUTF8Char); cdecl;
+    trace_vargs: procedure(_this: Pbgfx_callback_interface_t; const _filePath: PUTF8Char; _line: UInt16; const _format: PUTF8Char; _argList: Pointer); cdecl;
+    profiler_begin: procedure(_this: Pbgfx_callback_interface_t; const _name: PUTF8Char; _abgr: UInt32; const _filePath: PUTF8Char; _line: UInt16); cdecl;
+    profiler_begin_literal: procedure(_this: Pbgfx_callback_interface_t; const _name: PUTF8Char; _abgr: UInt32; const _filePath: PUTF8Char; _line: UInt16); cdecl;
     profiler_end: procedure(_this: Pbgfx_callback_interface_t); cdecl;
     cache_read_size: function(_this: Pbgfx_callback_interface_t; _id: UInt64): UInt32; cdecl;
     cache_read: function(_this: Pbgfx_callback_interface_t; _id: UInt64; _data: Pointer; _size: UInt32): Boolean; cdecl;
-    cache_write: procedure(_this: Pbgfx_callback_interface_t; _id: UInt64; _data: Pointer; _size: UInt32); cdecl;
-    screen_shot: procedure(_this: Pbgfx_callback_interface_t; _filePath: PUTF8Char; _width: UInt32; _height: UInt32; _pitch: UInt32; _data: Pointer; _size: UInt32; _yflip: Boolean); cdecl;
+    cache_write: procedure(_this: Pbgfx_callback_interface_t; _id: UInt64; const _data: Pointer; _size: UInt32); cdecl;
+    screen_shot: procedure(_this: Pbgfx_callback_interface_t; const _filePath: PUTF8Char; _width: UInt32; _height: UInt32; _pitch: UInt32; const _data: Pointer; _size: UInt32; _yflip: Boolean); cdecl;
     capture_begin: procedure(_this: Pbgfx_callback_interface_t; _width: UInt32; _height: UInt32; _pitch: UInt32; _format: bgfx_texture_format_t; _yflip: Boolean); cdecl;
     capture_end: procedure(_this: Pbgfx_callback_interface_t); cdecl;
-    capture_frame: procedure(_this: Pbgfx_callback_interface_t; _data: Pointer; _size: UInt32); cdecl;
+    capture_frame: procedure(_this: Pbgfx_callback_interface_t; const _data: Pointer; _size: UInt32); cdecl;
   end;
 
-  (* *)
   bgfx_callback_vtbl_t = bgfx_callback_vtbl_s;
 
   bgfx_dynamic_index_buffer_handle_s = record
@@ -1297,7 +1294,7 @@ type
   (* GPU info. *)
   bgfx_caps_gpu_t = bgfx_caps_gpu_s;
 
-  (* Renderer capabilities limits. *)
+  (* Renderer runtime limits. *)
   bgfx_caps_limits_s = record
     (* Maximum number of draw calls. *)
     maxDrawCalls: UInt32;
@@ -1341,13 +1338,15 @@ type
     maxOcclusionQueries: UInt32;
     (* Maximum number of encoder threads. *)
     maxEncoders: UInt32;
+    (* Minimum resource command buffer size. *)
+    minResourceCbSize: UInt32;
     (* Maximum transient vertex buffer size. *)
     transientVbSize: UInt32;
     (* Maximum transient index buffer size. *)
     transientIbSize: UInt32;
   end;
 
-  (* Renderer capabilities limits. *)
+  (* Renderer runtime limits. *)
   bgfx_caps_limits_t = bgfx_caps_limits_s;
 
   (* Renderer capabilities. *)
@@ -1356,8 +1355,7 @@ type
     rendererType: bgfx_renderer_type_t;
     (* Supported functionality.
 
-       See BGFX_CAPS_* flags at
-       https://bkaradzic.github.io/bgfx/bgfx.html#available-caps *)
+       See `BGFX_CAPS_*` flags at https://bkaradzic.github.io/bgfx/bgfx.html#available-caps *)
     supported: UInt64;
     (* Selected GPU vendor PCI id. *)
     vendorId: UInt16;
@@ -1371,32 +1369,31 @@ type
     numGPUs: UInt8;
     (* Enumerated GPUs. *)
     gpu: array [0..3] of bgfx_caps_gpu_t;
+    (* Renderer runtime limits. *)
     limits: bgfx_caps_limits_t;
     (* Supported texture format capabilities flags:
        - `BGFX_CAPS_FORMAT_TEXTURE_NONE` - Texture format is not supported.
        - `BGFX_CAPS_FORMAT_TEXTURE_2D` - Texture format is supported.
-       - `BGFX_CAPS_FORMAT_TEXTURE_2D_SRGB` - Texture as sRGB format is
-       supported.
+       - `BGFX_CAPS_FORMAT_TEXTURE_2D_SRGB` - Texture as sRGB format is supported.
        - `BGFX_CAPS_FORMAT_TEXTURE_2D_EMULATED` - Texture format is emulated.
        - `BGFX_CAPS_FORMAT_TEXTURE_3D` - Texture format is supported.
-       - `BGFX_CAPS_FORMAT_TEXTURE_3D_SRGB` - Texture as sRGB format is
-       supported.
+       - `BGFX_CAPS_FORMAT_TEXTURE_3D_SRGB` - Texture as sRGB format is supported.
        - `BGFX_CAPS_FORMAT_TEXTURE_3D_EMULATED` - Texture format is emulated.
        - `BGFX_CAPS_FORMAT_TEXTURE_CUBE` - Texture format is supported.
-       - `BGFX_CAPS_FORMAT_TEXTURE_CUBE_SRGB` - Texture as sRGB format is
-       supported.
+       - `BGFX_CAPS_FORMAT_TEXTURE_CUBE_SRGB` - Texture as sRGB format is supported.
        - `BGFX_CAPS_FORMAT_TEXTURE_CUBE_EMULATED` - Texture format is emulated.
-       - `BGFX_CAPS_FORMAT_TEXTURE_VERTEX` - Texture format can be used from
-       vertex shader.
-       - `BGFX_CAPS_FORMAT_TEXTURE_IMAGE` - Texture format can be used as image
-       from compute shader.
-       - `BGFX_CAPS_FORMAT_TEXTURE_FRAMEBUFFER` - Texture format can be used as
+       - `BGFX_CAPS_FORMAT_TEXTURE_VERTEX` - Texture format can be used from vertex shader.
+       - `BGFX_CAPS_FORMAT_TEXTURE_IMAGE_READ` - Texture format can be used as image
+       and read from.
+       - `BGFX_CAPS_FORMAT_TEXTURE_IMAGE_WRITE` - Texture format can be used as image
+       and written to.
+       - `BGFX_CAPS_FORMAT_TEXTURE_FRAMEBUFFER` - Texture format can be used as frame
+       buffer.
+       - `BGFX_CAPS_FORMAT_TEXTURE_FRAMEBUFFER_MSAA` - Texture format can be used as MSAA
        frame buffer.
-       - `BGFX_CAPS_FORMAT_TEXTURE_FRAMEBUFFER_MSAA` - Texture format can be
-       used as MSAA frame buffer.
        - `BGFX_CAPS_FORMAT_TEXTURE_MSAA` - Texture can be sampled as MSAA.
-       - `BGFX_CAPS_FORMAT_TEXTURE_MIP_AUTOGEN` - Texture format supports
-       auto-generated mips. *)
+       - `BGFX_CAPS_FORMAT_TEXTURE_MIP_AUTOGEN` - Texture format supports auto-generated
+       mips. *)
     formats: array [0..84] of UInt16;
   end;
 
@@ -1418,15 +1415,18 @@ type
 
   (* Platform data. *)
   bgfx_platform_data_s = record
-    (* Native display type. *)
+    (* Native display type (Unix specific). *)
     ndt: Pointer;
-    (* Native window handle. *)
+    (* Native window handle. If `NULL` bgfx will create headless
+       context/device if renderer API supports it. *)
     nwh: Pointer;
-    (* GL context, or D3D device. *)
+    (* GL context, or D3D device. If `NULL`, bgfx will create context/device. *)
     context: Pointer;
-    (* GL backbuffer, or D3D render target view. *)
+    (* GL back-buffer, or D3D render target view. If `NULL` bgfx will
+       create back-buffer color surface. *)
     backBuffer: Pointer;
-    (* Backbuffer depth/stencil. *)
+    (* Backbuffer depth/stencil. If `NULL` bgfx will create back-buffer
+       depth/stencil surface. *)
     backBufferDS: Pointer;
   end;
 
@@ -1453,15 +1453,19 @@ type
   (* Backbuffer resolution and reset parameters. *)
   bgfx_resolution_t = bgfx_resolution_s;
 
+  (* Configurable runtime limits parameters. *)
   bgfx_init_limits_s = record
     (* Maximum number of encoder threads. *)
     maxEncoders: UInt16;
+    (* Minimum resource command buffer size. *)
+    minResourceCbSize: UInt32;
     (* Maximum transient vertex buffer size. *)
     transientVbSize: UInt32;
     (* Maximum transient index buffer size. *)
     transientIbSize: UInt32;
   end;
 
+  (* Configurable runtime limits parameters. *)
   bgfx_init_limits_t = bgfx_init_limits_s;
 
   (* Initialization parameters used by `bgfx::init`. *)
@@ -1481,6 +1485,8 @@ type
     (* Device id. If set to 0 it will select first device, or device with
        matching id. *)
     deviceId: UInt16;
+    (* Capabilities initialization mask (default: UINT64_MAX). *)
+    capabilities: UInt64;
     (* Enable device for debuging. *)
     debug: Boolean;
     (* Enable device for profiling. *)
@@ -1489,6 +1495,7 @@ type
     platformData: bgfx_platform_data_t;
     (* Backbuffer resolution and reset parameters. See: `bgfx::Resolution`. *)
     resolution: bgfx_resolution_t;
+    (* Configurable runtime limits parameters. *)
     limits: bgfx_init_limits_t;
     (* Provide application specific callback interface.
        See: `bgfx::CallbackI` *)
@@ -1503,11 +1510,9 @@ type
   bgfx_init_t = bgfx_init_s;
   Pbgfx_init_t = ^bgfx_init_t;
 
-  (* Memory must be obtained by calling `bgfx::alloc`, `bgfx::copy`, or
-     `bgfx::makeRef`.
+  (* Memory must be obtained by calling `bgfx::alloc`, `bgfx::copy`, or `bgfx::makeRef`.
 
-     It is illegal to create this structure on stack and pass it to any
-     bgfx API. *)
+     It is illegal to create this structure on stack and pass it to any bgfx API. *)
   bgfx_memory_s = record
     (* Pointer to data. *)
     data: PUInt8;
@@ -1515,11 +1520,9 @@ type
     size: UInt32;
   end;
 
-  (* Memory must be obtained by calling `bgfx::alloc`, `bgfx::copy`, or
-     `bgfx::makeRef`.
+  (* Memory must be obtained by calling `bgfx::alloc`, `bgfx::copy`, or `bgfx::makeRef`.
 
-     It is illegal to create this structure on stack and pass it to any
-     bgfx API. *)
+     It is illegal to create this structure on stack and pass it to any bgfx API. *)
   bgfx_memory_t = bgfx_memory_s;
   Pbgfx_memory_t = ^bgfx_memory_t;
 
@@ -1533,6 +1536,8 @@ type
     startIndex: UInt32;
     (* Index buffer handle. *)
     handle: bgfx_index_buffer_handle_t;
+    (* Index buffer format is 16-bits if true, otherwise it is 32-bit. *)
+    isIndex16: Boolean;
   end;
 
   (* Transient index buffer. *)
@@ -1621,14 +1626,16 @@ type
 
   (* Frame buffer texture attachment info. *)
   bgfx_attachment_s = record
-    (* Attachement access. See `Access::Enum`. *)
+    (* Attachment access. See `Access::Enum`. *)
     access: bgfx_access_t;
     (* Render target texture handle. *)
     handle: bgfx_texture_handle_t;
     (* Mip level. *)
     mip: UInt16;
-    (* Cubemap side or depth layer/slice. *)
+    (* Cubemap side or depth layer/slice to use. *)
     layer: UInt16;
+    (* Number of texture layer/slice(s) in array to use. *)
+    numLayers: UInt16;
     (* Resolve flags. See: `BGFX_RESOLVE_*` *)
     resolve: UInt8;
   end;
@@ -1700,8 +1707,7 @@ type
     gpuTimeEnd: Int64;
     (* GPU timer frequency. *)
     gpuTimerFreq: Int64;
-    (* Time spent waiting for render backend thread to finish issuing draw
-       commands to underlying graphics API. *)
+    (* Time spent waiting for render backend thread to finish issuing draw commands to underlying graphics API. *)
     waitRender: Int64;
     (* Time spent waiting for submit thread to advance to next frame. *)
     waitSubmit: Int64;
@@ -1792,7 +1798,6 @@ type
   Pbgfx_encoder_t = Pointer;
   PPbgfx_encoder_t = ^Pbgfx_encoder_t;
 
-  (* *)
   bgfx_function_id = (
     BGFX_FUNCTION_ID_ATTACHMENT_INIT = 0,
     BGFX_FUNCTION_ID_VERTEX_LAYOUT_BEGIN = 1,
@@ -1859,149 +1864,155 @@ type
     BGFX_FUNCTION_ID_CREATE_COMPUTE_PROGRAM = 62,
     BGFX_FUNCTION_ID_DESTROY_PROGRAM = 63,
     BGFX_FUNCTION_ID_IS_TEXTURE_VALID = 64,
-    BGFX_FUNCTION_ID_CALC_TEXTURE_SIZE = 65,
-    BGFX_FUNCTION_ID_CREATE_TEXTURE = 66,
-    BGFX_FUNCTION_ID_CREATE_TEXTURE_2D = 67,
-    BGFX_FUNCTION_ID_CREATE_TEXTURE_2D_SCALED = 68,
-    BGFX_FUNCTION_ID_CREATE_TEXTURE_3D = 69,
-    BGFX_FUNCTION_ID_CREATE_TEXTURE_CUBE = 70,
-    BGFX_FUNCTION_ID_UPDATE_TEXTURE_2D = 71,
-    BGFX_FUNCTION_ID_UPDATE_TEXTURE_3D = 72,
-    BGFX_FUNCTION_ID_UPDATE_TEXTURE_CUBE = 73,
-    BGFX_FUNCTION_ID_READ_TEXTURE = 74,
-    BGFX_FUNCTION_ID_SET_TEXTURE_NAME = 75,
-    BGFX_FUNCTION_ID_GET_DIRECT_ACCESS_PTR = 76,
-    BGFX_FUNCTION_ID_DESTROY_TEXTURE = 77,
-    BGFX_FUNCTION_ID_CREATE_FRAME_BUFFER = 78,
-    BGFX_FUNCTION_ID_CREATE_FRAME_BUFFER_SCALED = 79,
-    BGFX_FUNCTION_ID_CREATE_FRAME_BUFFER_FROM_HANDLES = 80,
-    BGFX_FUNCTION_ID_CREATE_FRAME_BUFFER_FROM_ATTACHMENT = 81,
-    BGFX_FUNCTION_ID_CREATE_FRAME_BUFFER_FROM_NWH = 82,
-    BGFX_FUNCTION_ID_SET_FRAME_BUFFER_NAME = 83,
-    BGFX_FUNCTION_ID_GET_TEXTURE = 84,
-    BGFX_FUNCTION_ID_DESTROY_FRAME_BUFFER = 85,
-    BGFX_FUNCTION_ID_CREATE_UNIFORM = 86,
-    BGFX_FUNCTION_ID_GET_UNIFORM_INFO = 87,
-    BGFX_FUNCTION_ID_DESTROY_UNIFORM = 88,
-    BGFX_FUNCTION_ID_CREATE_OCCLUSION_QUERY = 89,
-    BGFX_FUNCTION_ID_GET_RESULT = 90,
-    BGFX_FUNCTION_ID_DESTROY_OCCLUSION_QUERY = 91,
-    BGFX_FUNCTION_ID_SET_PALETTE_COLOR = 92,
-    BGFX_FUNCTION_ID_SET_PALETTE_COLOR_RGBA8 = 93,
-    BGFX_FUNCTION_ID_SET_VIEW_NAME = 94,
-    BGFX_FUNCTION_ID_SET_VIEW_RECT = 95,
-    BGFX_FUNCTION_ID_SET_VIEW_RECT_RATIO = 96,
-    BGFX_FUNCTION_ID_SET_VIEW_SCISSOR = 97,
-    BGFX_FUNCTION_ID_SET_VIEW_CLEAR = 98,
-    BGFX_FUNCTION_ID_SET_VIEW_CLEAR_MRT = 99,
-    BGFX_FUNCTION_ID_SET_VIEW_MODE = 100,
-    BGFX_FUNCTION_ID_SET_VIEW_FRAME_BUFFER = 101,
-    BGFX_FUNCTION_ID_SET_VIEW_TRANSFORM = 102,
-    BGFX_FUNCTION_ID_SET_VIEW_ORDER = 103,
-    BGFX_FUNCTION_ID_ENCODER_BEGIN = 104,
-    BGFX_FUNCTION_ID_ENCODER_END = 105,
-    BGFX_FUNCTION_ID_ENCODER_SET_MARKER = 106,
-    BGFX_FUNCTION_ID_ENCODER_SET_STATE = 107,
-    BGFX_FUNCTION_ID_ENCODER_SET_CONDITION = 108,
-    BGFX_FUNCTION_ID_ENCODER_SET_STENCIL = 109,
-    BGFX_FUNCTION_ID_ENCODER_SET_SCISSOR = 110,
-    BGFX_FUNCTION_ID_ENCODER_SET_SCISSOR_CACHED = 111,
-    BGFX_FUNCTION_ID_ENCODER_SET_TRANSFORM = 112,
-    BGFX_FUNCTION_ID_ENCODER_SET_TRANSFORM_CACHED = 113,
-    BGFX_FUNCTION_ID_ENCODER_ALLOC_TRANSFORM = 114,
-    BGFX_FUNCTION_ID_ENCODER_SET_UNIFORM = 115,
-    BGFX_FUNCTION_ID_ENCODER_SET_INDEX_BUFFER = 116,
-    BGFX_FUNCTION_ID_ENCODER_SET_DYNAMIC_INDEX_BUFFER = 117,
-    BGFX_FUNCTION_ID_ENCODER_SET_TRANSIENT_INDEX_BUFFER = 118,
-    BGFX_FUNCTION_ID_ENCODER_SET_VERTEX_BUFFER = 119,
-    BGFX_FUNCTION_ID_ENCODER_SET_DYNAMIC_VERTEX_BUFFER = 120,
-    BGFX_FUNCTION_ID_ENCODER_SET_TRANSIENT_VERTEX_BUFFER = 121,
-    BGFX_FUNCTION_ID_ENCODER_SET_VERTEX_COUNT = 122,
-    BGFX_FUNCTION_ID_ENCODER_SET_INSTANCE_DATA_BUFFER = 123,
-    BGFX_FUNCTION_ID_ENCODER_SET_INSTANCE_DATA_FROM_VERTEX_BUFFER = 124,
-    BGFX_FUNCTION_ID_ENCODER_SET_INSTANCE_DATA_FROM_DYNAMIC_VERTEX_BUFFER = 125,
-    BGFX_FUNCTION_ID_ENCODER_SET_INSTANCE_COUNT = 126,
-    BGFX_FUNCTION_ID_ENCODER_SET_TEXTURE = 127,
-    BGFX_FUNCTION_ID_ENCODER_TOUCH = 128,
-    BGFX_FUNCTION_ID_ENCODER_SUBMIT = 129,
-    BGFX_FUNCTION_ID_ENCODER_SUBMIT_OCCLUSION_QUERY = 130,
-    BGFX_FUNCTION_ID_ENCODER_SUBMIT_INDIRECT = 131,
-    BGFX_FUNCTION_ID_ENCODER_SET_COMPUTE_INDEX_BUFFER = 132,
-    BGFX_FUNCTION_ID_ENCODER_SET_COMPUTE_VERTEX_BUFFER = 133,
-    BGFX_FUNCTION_ID_ENCODER_SET_COMPUTE_DYNAMIC_INDEX_BUFFER = 134,
-    BGFX_FUNCTION_ID_ENCODER_SET_COMPUTE_DYNAMIC_VERTEX_BUFFER = 135,
-    BGFX_FUNCTION_ID_ENCODER_SET_COMPUTE_INDIRECT_BUFFER = 136,
-    BGFX_FUNCTION_ID_ENCODER_SET_IMAGE = 137,
-    BGFX_FUNCTION_ID_ENCODER_DISPATCH = 138,
-    BGFX_FUNCTION_ID_ENCODER_DISPATCH_INDIRECT = 139,
-    BGFX_FUNCTION_ID_ENCODER_DISCARD = 140,
-    BGFX_FUNCTION_ID_ENCODER_BLIT = 141,
-    BGFX_FUNCTION_ID_REQUEST_SCREEN_SHOT = 142,
-    BGFX_FUNCTION_ID_RENDER_FRAME = 143,
-    BGFX_FUNCTION_ID_SET_PLATFORM_DATA = 144,
-    BGFX_FUNCTION_ID_GET_INTERNAL_DATA = 145,
-    BGFX_FUNCTION_ID_OVERRIDE_INTERNAL_TEXTURE_PTR = 146,
-    BGFX_FUNCTION_ID_OVERRIDE_INTERNAL_TEXTURE = 147,
-    BGFX_FUNCTION_ID_SET_MARKER = 148,
-    BGFX_FUNCTION_ID_SET_STATE = 149,
-    BGFX_FUNCTION_ID_SET_CONDITION = 150,
-    BGFX_FUNCTION_ID_SET_STENCIL = 151,
-    BGFX_FUNCTION_ID_SET_SCISSOR = 152,
-    BGFX_FUNCTION_ID_SET_SCISSOR_CACHED = 153,
-    BGFX_FUNCTION_ID_SET_TRANSFORM = 154,
-    BGFX_FUNCTION_ID_SET_TRANSFORM_CACHED = 155,
-    BGFX_FUNCTION_ID_ALLOC_TRANSFORM = 156,
-    BGFX_FUNCTION_ID_SET_UNIFORM = 157,
-    BGFX_FUNCTION_ID_SET_INDEX_BUFFER = 158,
-    BGFX_FUNCTION_ID_SET_DYNAMIC_INDEX_BUFFER = 159,
-    BGFX_FUNCTION_ID_SET_TRANSIENT_INDEX_BUFFER = 160,
-    BGFX_FUNCTION_ID_SET_VERTEX_BUFFER = 161,
-    BGFX_FUNCTION_ID_SET_DYNAMIC_VERTEX_BUFFER = 162,
-    BGFX_FUNCTION_ID_SET_TRANSIENT_VERTEX_BUFFER = 163,
-    BGFX_FUNCTION_ID_SET_VERTEX_COUNT = 164,
-    BGFX_FUNCTION_ID_SET_INSTANCE_DATA_BUFFER = 165,
-    BGFX_FUNCTION_ID_SET_INSTANCE_DATA_FROM_VERTEX_BUFFER = 166,
-    BGFX_FUNCTION_ID_SET_INSTANCE_DATA_FROM_DYNAMIC_VERTEX_BUFFER = 167,
-    BGFX_FUNCTION_ID_SET_INSTANCE_COUNT = 168,
-    BGFX_FUNCTION_ID_SET_TEXTURE = 169,
-    BGFX_FUNCTION_ID_TOUCH = 170,
-    BGFX_FUNCTION_ID_SUBMIT = 171,
-    BGFX_FUNCTION_ID_SUBMIT_OCCLUSION_QUERY = 172,
-    BGFX_FUNCTION_ID_SUBMIT_INDIRECT = 173,
-    BGFX_FUNCTION_ID_SET_COMPUTE_INDEX_BUFFER = 174,
-    BGFX_FUNCTION_ID_SET_COMPUTE_VERTEX_BUFFER = 175,
-    BGFX_FUNCTION_ID_SET_COMPUTE_DYNAMIC_INDEX_BUFFER = 176,
-    BGFX_FUNCTION_ID_SET_COMPUTE_DYNAMIC_VERTEX_BUFFER = 177,
-    BGFX_FUNCTION_ID_SET_COMPUTE_INDIRECT_BUFFER = 178,
-    BGFX_FUNCTION_ID_SET_IMAGE = 179,
-    BGFX_FUNCTION_ID_DISPATCH = 180,
-    BGFX_FUNCTION_ID_DISPATCH_INDIRECT = 181,
-    BGFX_FUNCTION_ID_DISCARD = 182,
-    BGFX_FUNCTION_ID_BLIT = 183,
-    BGFX_FUNCTION_ID_COUNT = 184);
+    BGFX_FUNCTION_ID_IS_FRAME_BUFFER_VALID = 65,
+    BGFX_FUNCTION_ID_CALC_TEXTURE_SIZE = 66,
+    BGFX_FUNCTION_ID_CREATE_TEXTURE = 67,
+    BGFX_FUNCTION_ID_CREATE_TEXTURE_2D = 68,
+    BGFX_FUNCTION_ID_CREATE_TEXTURE_2D_SCALED = 69,
+    BGFX_FUNCTION_ID_CREATE_TEXTURE_3D = 70,
+    BGFX_FUNCTION_ID_CREATE_TEXTURE_CUBE = 71,
+    BGFX_FUNCTION_ID_UPDATE_TEXTURE_2D = 72,
+    BGFX_FUNCTION_ID_UPDATE_TEXTURE_3D = 73,
+    BGFX_FUNCTION_ID_UPDATE_TEXTURE_CUBE = 74,
+    BGFX_FUNCTION_ID_READ_TEXTURE = 75,
+    BGFX_FUNCTION_ID_SET_TEXTURE_NAME = 76,
+    BGFX_FUNCTION_ID_GET_DIRECT_ACCESS_PTR = 77,
+    BGFX_FUNCTION_ID_DESTROY_TEXTURE = 78,
+    BGFX_FUNCTION_ID_CREATE_FRAME_BUFFER = 79,
+    BGFX_FUNCTION_ID_CREATE_FRAME_BUFFER_SCALED = 80,
+    BGFX_FUNCTION_ID_CREATE_FRAME_BUFFER_FROM_HANDLES = 81,
+    BGFX_FUNCTION_ID_CREATE_FRAME_BUFFER_FROM_ATTACHMENT = 82,
+    BGFX_FUNCTION_ID_CREATE_FRAME_BUFFER_FROM_NWH = 83,
+    BGFX_FUNCTION_ID_SET_FRAME_BUFFER_NAME = 84,
+    BGFX_FUNCTION_ID_GET_TEXTURE = 85,
+    BGFX_FUNCTION_ID_DESTROY_FRAME_BUFFER = 86,
+    BGFX_FUNCTION_ID_CREATE_UNIFORM = 87,
+    BGFX_FUNCTION_ID_GET_UNIFORM_INFO = 88,
+    BGFX_FUNCTION_ID_DESTROY_UNIFORM = 89,
+    BGFX_FUNCTION_ID_CREATE_OCCLUSION_QUERY = 90,
+    BGFX_FUNCTION_ID_GET_RESULT = 91,
+    BGFX_FUNCTION_ID_DESTROY_OCCLUSION_QUERY = 92,
+    BGFX_FUNCTION_ID_SET_PALETTE_COLOR = 93,
+    BGFX_FUNCTION_ID_SET_PALETTE_COLOR_RGBA8 = 94,
+    BGFX_FUNCTION_ID_SET_VIEW_NAME = 95,
+    BGFX_FUNCTION_ID_SET_VIEW_RECT = 96,
+    BGFX_FUNCTION_ID_SET_VIEW_RECT_RATIO = 97,
+    BGFX_FUNCTION_ID_SET_VIEW_SCISSOR = 98,
+    BGFX_FUNCTION_ID_SET_VIEW_CLEAR = 99,
+    BGFX_FUNCTION_ID_SET_VIEW_CLEAR_MRT = 100,
+    BGFX_FUNCTION_ID_SET_VIEW_MODE = 101,
+    BGFX_FUNCTION_ID_SET_VIEW_FRAME_BUFFER = 102,
+    BGFX_FUNCTION_ID_SET_VIEW_TRANSFORM = 103,
+    BGFX_FUNCTION_ID_SET_VIEW_ORDER = 104,
+    BGFX_FUNCTION_ID_RESET_VIEW = 105,
+    BGFX_FUNCTION_ID_ENCODER_BEGIN = 106,
+    BGFX_FUNCTION_ID_ENCODER_END = 107,
+    BGFX_FUNCTION_ID_ENCODER_SET_MARKER = 108,
+    BGFX_FUNCTION_ID_ENCODER_SET_STATE = 109,
+    BGFX_FUNCTION_ID_ENCODER_SET_CONDITION = 110,
+    BGFX_FUNCTION_ID_ENCODER_SET_STENCIL = 111,
+    BGFX_FUNCTION_ID_ENCODER_SET_SCISSOR = 112,
+    BGFX_FUNCTION_ID_ENCODER_SET_SCISSOR_CACHED = 113,
+    BGFX_FUNCTION_ID_ENCODER_SET_TRANSFORM = 114,
+    BGFX_FUNCTION_ID_ENCODER_SET_TRANSFORM_CACHED = 115,
+    BGFX_FUNCTION_ID_ENCODER_ALLOC_TRANSFORM = 116,
+    BGFX_FUNCTION_ID_ENCODER_SET_UNIFORM = 117,
+    BGFX_FUNCTION_ID_ENCODER_SET_INDEX_BUFFER = 118,
+    BGFX_FUNCTION_ID_ENCODER_SET_DYNAMIC_INDEX_BUFFER = 119,
+    BGFX_FUNCTION_ID_ENCODER_SET_TRANSIENT_INDEX_BUFFER = 120,
+    BGFX_FUNCTION_ID_ENCODER_SET_VERTEX_BUFFER = 121,
+    BGFX_FUNCTION_ID_ENCODER_SET_VERTEX_BUFFER_WITH_LAYOUT = 122,
+    BGFX_FUNCTION_ID_ENCODER_SET_DYNAMIC_VERTEX_BUFFER = 123,
+    BGFX_FUNCTION_ID_ENCODER_SET_DYNAMIC_VERTEX_BUFFER_WITH_LAYOUT = 124,
+    BGFX_FUNCTION_ID_ENCODER_SET_TRANSIENT_VERTEX_BUFFER = 125,
+    BGFX_FUNCTION_ID_ENCODER_SET_TRANSIENT_VERTEX_BUFFER_WITH_LAYOUT = 126,
+    BGFX_FUNCTION_ID_ENCODER_SET_VERTEX_COUNT = 127,
+    BGFX_FUNCTION_ID_ENCODER_SET_INSTANCE_DATA_BUFFER = 128,
+    BGFX_FUNCTION_ID_ENCODER_SET_INSTANCE_DATA_FROM_VERTEX_BUFFER = 129,
+    BGFX_FUNCTION_ID_ENCODER_SET_INSTANCE_DATA_FROM_DYNAMIC_VERTEX_BUFFER = 130,
+    BGFX_FUNCTION_ID_ENCODER_SET_INSTANCE_COUNT = 131,
+    BGFX_FUNCTION_ID_ENCODER_SET_TEXTURE = 132,
+    BGFX_FUNCTION_ID_ENCODER_TOUCH = 133,
+    BGFX_FUNCTION_ID_ENCODER_SUBMIT = 134,
+    BGFX_FUNCTION_ID_ENCODER_SUBMIT_OCCLUSION_QUERY = 135,
+    BGFX_FUNCTION_ID_ENCODER_SUBMIT_INDIRECT = 136,
+    BGFX_FUNCTION_ID_ENCODER_SET_COMPUTE_INDEX_BUFFER = 137,
+    BGFX_FUNCTION_ID_ENCODER_SET_COMPUTE_VERTEX_BUFFER = 138,
+    BGFX_FUNCTION_ID_ENCODER_SET_COMPUTE_DYNAMIC_INDEX_BUFFER = 139,
+    BGFX_FUNCTION_ID_ENCODER_SET_COMPUTE_DYNAMIC_VERTEX_BUFFER = 140,
+    BGFX_FUNCTION_ID_ENCODER_SET_COMPUTE_INDIRECT_BUFFER = 141,
+    BGFX_FUNCTION_ID_ENCODER_SET_IMAGE = 142,
+    BGFX_FUNCTION_ID_ENCODER_DISPATCH = 143,
+    BGFX_FUNCTION_ID_ENCODER_DISPATCH_INDIRECT = 144,
+    BGFX_FUNCTION_ID_ENCODER_DISCARD = 145,
+    BGFX_FUNCTION_ID_ENCODER_BLIT = 146,
+    BGFX_FUNCTION_ID_REQUEST_SCREEN_SHOT = 147,
+    BGFX_FUNCTION_ID_RENDER_FRAME = 148,
+    BGFX_FUNCTION_ID_SET_PLATFORM_DATA = 149,
+    BGFX_FUNCTION_ID_GET_INTERNAL_DATA = 150,
+    BGFX_FUNCTION_ID_OVERRIDE_INTERNAL_TEXTURE_PTR = 151,
+    BGFX_FUNCTION_ID_OVERRIDE_INTERNAL_TEXTURE = 152,
+    BGFX_FUNCTION_ID_SET_MARKER = 153,
+    BGFX_FUNCTION_ID_SET_STATE = 154,
+    BGFX_FUNCTION_ID_SET_CONDITION = 155,
+    BGFX_FUNCTION_ID_SET_STENCIL = 156,
+    BGFX_FUNCTION_ID_SET_SCISSOR = 157,
+    BGFX_FUNCTION_ID_SET_SCISSOR_CACHED = 158,
+    BGFX_FUNCTION_ID_SET_TRANSFORM = 159,
+    BGFX_FUNCTION_ID_SET_TRANSFORM_CACHED = 160,
+    BGFX_FUNCTION_ID_ALLOC_TRANSFORM = 161,
+    BGFX_FUNCTION_ID_SET_UNIFORM = 162,
+    BGFX_FUNCTION_ID_SET_INDEX_BUFFER = 163,
+    BGFX_FUNCTION_ID_SET_DYNAMIC_INDEX_BUFFER = 164,
+    BGFX_FUNCTION_ID_SET_TRANSIENT_INDEX_BUFFER = 165,
+    BGFX_FUNCTION_ID_SET_VERTEX_BUFFER = 166,
+    BGFX_FUNCTION_ID_SET_VERTEX_BUFFER_WITH_LAYOUT = 167,
+    BGFX_FUNCTION_ID_SET_DYNAMIC_VERTEX_BUFFER = 168,
+    BGFX_FUNCTION_ID_SET_DYNAMIC_VERTEX_BUFFER_WITH_LAYOUT = 169,
+    BGFX_FUNCTION_ID_SET_TRANSIENT_VERTEX_BUFFER = 170,
+    BGFX_FUNCTION_ID_SET_TRANSIENT_VERTEX_BUFFER_WITH_LAYOUT = 171,
+    BGFX_FUNCTION_ID_SET_VERTEX_COUNT = 172,
+    BGFX_FUNCTION_ID_SET_INSTANCE_DATA_BUFFER = 173,
+    BGFX_FUNCTION_ID_SET_INSTANCE_DATA_FROM_VERTEX_BUFFER = 174,
+    BGFX_FUNCTION_ID_SET_INSTANCE_DATA_FROM_DYNAMIC_VERTEX_BUFFER = 175,
+    BGFX_FUNCTION_ID_SET_INSTANCE_COUNT = 176,
+    BGFX_FUNCTION_ID_SET_TEXTURE = 177,
+    BGFX_FUNCTION_ID_TOUCH = 178,
+    BGFX_FUNCTION_ID_SUBMIT = 179,
+    BGFX_FUNCTION_ID_SUBMIT_OCCLUSION_QUERY = 180,
+    BGFX_FUNCTION_ID_SUBMIT_INDIRECT = 181,
+    BGFX_FUNCTION_ID_SET_COMPUTE_INDEX_BUFFER = 182,
+    BGFX_FUNCTION_ID_SET_COMPUTE_VERTEX_BUFFER = 183,
+    BGFX_FUNCTION_ID_SET_COMPUTE_DYNAMIC_INDEX_BUFFER = 184,
+    BGFX_FUNCTION_ID_SET_COMPUTE_DYNAMIC_VERTEX_BUFFER = 185,
+    BGFX_FUNCTION_ID_SET_COMPUTE_INDIRECT_BUFFER = 186,
+    BGFX_FUNCTION_ID_SET_IMAGE = 187,
+    BGFX_FUNCTION_ID_DISPATCH = 188,
+    BGFX_FUNCTION_ID_DISPATCH_INDIRECT = 189,
+    BGFX_FUNCTION_ID_DISCARD = 190,
+    BGFX_FUNCTION_ID_BLIT = 191,
+    BGFX_FUNCTION_ID_COUNT = 192);
   Pbgfx_function_id = ^bgfx_function_id;
-  (* *)
   bgfx_function_id_t = bgfx_function_id;
 
-  (* *)
   bgfx_interface_vtbl = record
-    attachment_init: procedure(_this: Pbgfx_attachment_t; _handle: bgfx_texture_handle_t; _access: bgfx_access_t; _layer: UInt16; _mip: UInt16; _resolve: UInt8); cdecl;
+    attachment_init: procedure(_this: Pbgfx_attachment_t; _handle: bgfx_texture_handle_t; _access: bgfx_access_t; _layer: UInt16; _numLayers: UInt16; _mip: UInt16; _resolve: UInt8); cdecl;
     vertex_layout_begin: function(_this: Pbgfx_vertex_layout_t; _rendererType: bgfx_renderer_type_t): Pbgfx_vertex_layout_t; cdecl;
     vertex_layout_add: function(_this: Pbgfx_vertex_layout_t; _attrib: bgfx_attrib_t; _num: UInt8; _type: bgfx_attrib_type_t; _normalized: Boolean; _asInt: Boolean): Pbgfx_vertex_layout_t; cdecl;
-    vertex_layout_decode: procedure(_this: Pbgfx_vertex_layout_t; _attrib: bgfx_attrib_t; _num: PUInt8; _type: Pbgfx_attrib_type_t; _normalized: PBoolean; _asInt: PBoolean); cdecl;
-    vertex_layout_has: function(_this: Pbgfx_vertex_layout_t; _attrib: bgfx_attrib_t): Boolean; cdecl;
+    vertex_layout_decode: procedure(const _this: Pbgfx_vertex_layout_t; _attrib: bgfx_attrib_t; _num: PUInt8; _type: Pbgfx_attrib_type_t; _normalized: PBoolean; _asInt: PBoolean); cdecl;
+    vertex_layout_has: function(const _this: Pbgfx_vertex_layout_t; _attrib: bgfx_attrib_t): Boolean; cdecl;
     vertex_layout_skip: function(_this: Pbgfx_vertex_layout_t; _num: UInt8): Pbgfx_vertex_layout_t; cdecl;
     vertex_layout_end: procedure(_this: Pbgfx_vertex_layout_t); cdecl;
-    vertex_pack: procedure(_input: PSingle; _inputNormalized: Boolean; _attr: bgfx_attrib_t; _layout: Pbgfx_vertex_layout_t; _data: Pointer; _index: UInt32); cdecl;
-    vertex_unpack: procedure(_output: PSingle; _attr: bgfx_attrib_t; _layout: Pbgfx_vertex_layout_t; _data: Pointer; _index: UInt32); cdecl;
-    vertex_convert: procedure(_dstLayout: Pbgfx_vertex_layout_t; _dstData: Pointer; _srcLayout: Pbgfx_vertex_layout_t; _srcData: Pointer; _num: UInt32); cdecl;
-    weld_vertices: function(_output: PUInt16; _layout: Pbgfx_vertex_layout_t; _data: Pointer; _num: UInt16; _epsilon: Single): UInt16; cdecl;
-    topology_convert: function(_conversion: bgfx_topology_convert_t; _dst: Pointer; _dstSize: UInt32; _indices: Pointer; _numIndices: UInt32; _index32: Boolean): UInt32; cdecl;
-    topology_sort_tri_list: procedure(_sort: bgfx_topology_sort_t; _dst: Pointer; _dstSize: UInt32; _dir: PSingle; _pos: PSingle; _vertices: Pointer; _stride: UInt32; _indices: Pointer; _numIndices: UInt32; _index32: Boolean); cdecl;
+    vertex_pack: procedure(_input: PSingle; _inputNormalized: Boolean; _attr: bgfx_attrib_t; const _layout: Pbgfx_vertex_layout_t; _data: Pointer; _index: UInt32); cdecl;
+    vertex_unpack: procedure(_output: PSingle; _attr: bgfx_attrib_t; const _layout: Pbgfx_vertex_layout_t; const _data: Pointer; _index: UInt32); cdecl;
+    vertex_convert: procedure(const _dstLayout: Pbgfx_vertex_layout_t; _dstData: Pointer; const _srcLayout: Pbgfx_vertex_layout_t; const _srcData: Pointer; _num: UInt32); cdecl;
+    weld_vertices: function(_output: Pointer; const _layout: Pbgfx_vertex_layout_t; const _data: Pointer; _num: UInt32; _index32: Boolean; _epsilon: Single): UInt32; cdecl;
+    topology_convert: function(_conversion: bgfx_topology_convert_t; _dst: Pointer; _dstSize: UInt32; const _indices: Pointer; _numIndices: UInt32; _index32: Boolean): UInt32; cdecl;
+    topology_sort_tri_list: procedure(_sort: bgfx_topology_sort_t; _dst: Pointer; _dstSize: UInt32; _dir: PSingle; _pos: PSingle; const _vertices: Pointer; _stride: UInt32; const _indices: Pointer; _numIndices: UInt32; _index32: Boolean); cdecl;
     get_supported_renderers: function(_max: UInt8; _enum: Pbgfx_renderer_type_t): UInt8; cdecl;
     get_renderer_name: function(_type: bgfx_renderer_type_t): PUTF8Char; cdecl;
     init_ctor: procedure(_init: Pbgfx_init_t); cdecl;
-    init: function(_init: Pbgfx_init_t): Boolean; cdecl;
+    init: function(const _init: Pbgfx_init_t): Boolean; cdecl;
     shutdown: procedure(); cdecl;
     reset: procedure(_width: UInt32; _height: UInt32; _flags: UInt32; _format: bgfx_texture_format_t); cdecl;
     frame: function(_capture: Boolean): UInt32; cdecl;
@@ -2009,69 +2020,70 @@ type
     get_caps: function(): Pbgfx_caps_t; cdecl;
     get_stats: function(): Pbgfx_stats_t; cdecl;
     alloc: function(_size: UInt32): Pbgfx_memory_t; cdecl;
-    copy: function(_data: Pointer; _size: UInt32): Pbgfx_memory_t; cdecl;
-    make_ref: function(_data: Pointer; _size: UInt32): Pbgfx_memory_t; cdecl;
-    make_ref_release: function(_data: Pointer; _size: UInt32; _releaseFn: bgfx_release_fn_t; _userData: Pointer): Pbgfx_memory_t; cdecl;
+    copy: function(const _data: Pointer; _size: UInt32): Pbgfx_memory_t; cdecl;
+    make_ref: function(const _data: Pointer; _size: UInt32): Pbgfx_memory_t; cdecl;
+    make_ref_release: function(const _data: Pointer; _size: UInt32; _releaseFn: bgfx_release_fn_t; _userData: Pointer): Pbgfx_memory_t; cdecl;
     set_debug: procedure(_debug: UInt32); cdecl;
     dbg_text_clear: procedure(_attr: UInt8; _small: Boolean); cdecl;
-    dbg_text_printf: procedure(_x: UInt16; _y: UInt16; _attr: UInt8; _format: PUTF8Char) varargs; cdecl;
-    dbg_text_vprintf: procedure(_x: UInt16; _y: UInt16; _attr: UInt8; _format: PUTF8Char; _argList: Pointer); cdecl;
-    dbg_text_image: procedure(_x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16; _data: Pointer; _pitch: UInt16); cdecl;
-    create_index_buffer: function(_mem: Pbgfx_memory_t; _flags: UInt16): bgfx_index_buffer_handle_t; cdecl;
-    set_index_buffer_name: procedure(_handle: bgfx_index_buffer_handle_t; _name: PUTF8Char; _len: Int32); cdecl;
+    dbg_text_printf: procedure(_x: UInt16; _y: UInt16; _attr: UInt8; const _format: PUTF8Char) varargs; cdecl;
+    dbg_text_vprintf: procedure(_x: UInt16; _y: UInt16; _attr: UInt8; const _format: PUTF8Char; _argList: Pointer); cdecl;
+    dbg_text_image: procedure(_x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16; const _data: Pointer; _pitch: UInt16); cdecl;
+    create_index_buffer: function(const _mem: Pbgfx_memory_t; _flags: UInt16): bgfx_index_buffer_handle_t; cdecl;
+    set_index_buffer_name: procedure(_handle: bgfx_index_buffer_handle_t; const _name: PUTF8Char; _len: Int32); cdecl;
     destroy_index_buffer: procedure(_handle: bgfx_index_buffer_handle_t); cdecl;
-    create_vertex_layout: function(_layout: Pbgfx_vertex_layout_t): bgfx_vertex_layout_handle_t; cdecl;
+    create_vertex_layout: function(const _layout: Pbgfx_vertex_layout_t): bgfx_vertex_layout_handle_t; cdecl;
     destroy_vertex_layout: procedure(_layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
-    create_vertex_buffer: function(_mem: Pbgfx_memory_t; _layout: Pbgfx_vertex_layout_t; _flags: UInt16): bgfx_vertex_buffer_handle_t; cdecl;
-    set_vertex_buffer_name: procedure(_handle: bgfx_vertex_buffer_handle_t; _name: PUTF8Char; _len: Int32); cdecl;
+    create_vertex_buffer: function(const _mem: Pbgfx_memory_t; const _layout: Pbgfx_vertex_layout_t; _flags: UInt16): bgfx_vertex_buffer_handle_t; cdecl;
+    set_vertex_buffer_name: procedure(_handle: bgfx_vertex_buffer_handle_t; const _name: PUTF8Char; _len: Int32); cdecl;
     destroy_vertex_buffer: procedure(_handle: bgfx_vertex_buffer_handle_t); cdecl;
     create_dynamic_index_buffer: function(_num: UInt32; _flags: UInt16): bgfx_dynamic_index_buffer_handle_t; cdecl;
-    create_dynamic_index_buffer_mem: function(_mem: Pbgfx_memory_t; _flags: UInt16): bgfx_dynamic_index_buffer_handle_t; cdecl;
-    update_dynamic_index_buffer: procedure(_handle: bgfx_dynamic_index_buffer_handle_t; _startIndex: UInt32; _mem: Pbgfx_memory_t); cdecl;
+    create_dynamic_index_buffer_mem: function(const _mem: Pbgfx_memory_t; _flags: UInt16): bgfx_dynamic_index_buffer_handle_t; cdecl;
+    update_dynamic_index_buffer: procedure(_handle: bgfx_dynamic_index_buffer_handle_t; _startIndex: UInt32; const _mem: Pbgfx_memory_t); cdecl;
     destroy_dynamic_index_buffer: procedure(_handle: bgfx_dynamic_index_buffer_handle_t); cdecl;
-    create_dynamic_vertex_buffer: function(_num: UInt32; _layout: Pbgfx_vertex_layout_t; _flags: UInt16): bgfx_dynamic_vertex_buffer_handle_t; cdecl;
-    create_dynamic_vertex_buffer_mem: function(_mem: Pbgfx_memory_t; _layout: Pbgfx_vertex_layout_t; _flags: UInt16): bgfx_dynamic_vertex_buffer_handle_t; cdecl;
-    update_dynamic_vertex_buffer: procedure(_handle: bgfx_dynamic_vertex_buffer_handle_t; _startVertex: UInt32; _mem: Pbgfx_memory_t); cdecl;
+    create_dynamic_vertex_buffer: function(_num: UInt32; const _layout: Pbgfx_vertex_layout_t; _flags: UInt16): bgfx_dynamic_vertex_buffer_handle_t; cdecl;
+    create_dynamic_vertex_buffer_mem: function(const _mem: Pbgfx_memory_t; const _layout: Pbgfx_vertex_layout_t; _flags: UInt16): bgfx_dynamic_vertex_buffer_handle_t; cdecl;
+    update_dynamic_vertex_buffer: procedure(_handle: bgfx_dynamic_vertex_buffer_handle_t; _startVertex: UInt32; const _mem: Pbgfx_memory_t); cdecl;
     destroy_dynamic_vertex_buffer: procedure(_handle: bgfx_dynamic_vertex_buffer_handle_t); cdecl;
-    get_avail_transient_index_buffer: function(_num: UInt32): UInt32; cdecl;
-    get_avail_transient_vertex_buffer: function(_num: UInt32; _layout: Pbgfx_vertex_layout_t): UInt32; cdecl;
+    get_avail_transient_index_buffer: function(_num: UInt32; _index32: Boolean): UInt32; cdecl;
+    get_avail_transient_vertex_buffer: function(_num: UInt32; const _layout: Pbgfx_vertex_layout_t): UInt32; cdecl;
     get_avail_instance_data_buffer: function(_num: UInt32; _stride: UInt16): UInt32; cdecl;
-    alloc_transient_index_buffer: procedure(_tib: Pbgfx_transient_index_buffer_t; _num: UInt32); cdecl;
-    alloc_transient_vertex_buffer: procedure(_tvb: Pbgfx_transient_vertex_buffer_t; _num: UInt32; _layout: Pbgfx_vertex_layout_t); cdecl;
-    alloc_transient_buffers: function(_tvb: Pbgfx_transient_vertex_buffer_t; _layout: Pbgfx_vertex_layout_t; _numVertices: UInt32; _tib: Pbgfx_transient_index_buffer_t; _numIndices: UInt32): Boolean; cdecl;
+    alloc_transient_index_buffer: procedure(_tib: Pbgfx_transient_index_buffer_t; _num: UInt32; _index32: Boolean); cdecl;
+    alloc_transient_vertex_buffer: procedure(_tvb: Pbgfx_transient_vertex_buffer_t; _num: UInt32; const _layout: Pbgfx_vertex_layout_t); cdecl;
+    alloc_transient_buffers: function(_tvb: Pbgfx_transient_vertex_buffer_t; const _layout: Pbgfx_vertex_layout_t; _numVertices: UInt32; _tib: Pbgfx_transient_index_buffer_t; _numIndices: UInt32; _index32: Boolean): Boolean; cdecl;
     alloc_instance_data_buffer: procedure(_idb: Pbgfx_instance_data_buffer_t; _num: UInt32; _stride: UInt16); cdecl;
     create_indirect_buffer: function(_num: UInt32): bgfx_indirect_buffer_handle_t; cdecl;
     destroy_indirect_buffer: procedure(_handle: bgfx_indirect_buffer_handle_t); cdecl;
-    create_shader: function(_mem: Pbgfx_memory_t): bgfx_shader_handle_t; cdecl;
+    create_shader: function(const _mem: Pbgfx_memory_t): bgfx_shader_handle_t; cdecl;
     get_shader_uniforms: function(_handle: bgfx_shader_handle_t; _uniforms: Pbgfx_uniform_handle_t; _max: UInt16): UInt16; cdecl;
-    set_shader_name: procedure(_handle: bgfx_shader_handle_t; _name: PUTF8Char; _len: Int32); cdecl;
+    set_shader_name: procedure(_handle: bgfx_shader_handle_t; const _name: PUTF8Char; _len: Int32); cdecl;
     destroy_shader: procedure(_handle: bgfx_shader_handle_t); cdecl;
     create_program: function(_vsh: bgfx_shader_handle_t; _fsh: bgfx_shader_handle_t; _destroyShaders: Boolean): bgfx_program_handle_t; cdecl;
     create_compute_program: function(_csh: bgfx_shader_handle_t; _destroyShaders: Boolean): bgfx_program_handle_t; cdecl;
     destroy_program: procedure(_handle: bgfx_program_handle_t); cdecl;
     is_texture_valid: function(_depth: UInt16; _cubeMap: Boolean; _numLayers: UInt16; _format: bgfx_texture_format_t; _flags: UInt64): Boolean; cdecl;
+    is_frame_buffer_valid: function(_num: UInt8; const _attachment: Pbgfx_attachment_t): Boolean; cdecl;
     calc_texture_size: procedure(_info: Pbgfx_texture_info_t; _width: UInt16; _height: UInt16; _depth: UInt16; _cubeMap: Boolean; _hasMips: Boolean; _numLayers: UInt16; _format: bgfx_texture_format_t); cdecl;
-    create_texture: function(_mem: Pbgfx_memory_t; _flags: UInt64; _skip: UInt8; _info: Pbgfx_texture_info_t): bgfx_texture_handle_t; cdecl;
-    create_texture_2d: function(_width: UInt16; _height: UInt16; _hasMips: Boolean; _numLayers: UInt16; _format: bgfx_texture_format_t; _flags: UInt64; _mem: Pbgfx_memory_t): bgfx_texture_handle_t; cdecl;
+    create_texture: function(const _mem: Pbgfx_memory_t; _flags: UInt64; _skip: UInt8; _info: Pbgfx_texture_info_t): bgfx_texture_handle_t; cdecl;
+    create_texture_2d: function(_width: UInt16; _height: UInt16; _hasMips: Boolean; _numLayers: UInt16; _format: bgfx_texture_format_t; _flags: UInt64; const _mem: Pbgfx_memory_t): bgfx_texture_handle_t; cdecl;
     create_texture_2d_scaled: function(_ratio: bgfx_backbuffer_ratio_t; _hasMips: Boolean; _numLayers: UInt16; _format: bgfx_texture_format_t; _flags: UInt64): bgfx_texture_handle_t; cdecl;
-    create_texture_3d: function(_width: UInt16; _height: UInt16; _depth: UInt16; _hasMips: Boolean; _format: bgfx_texture_format_t; _flags: UInt64; _mem: Pbgfx_memory_t): bgfx_texture_handle_t; cdecl;
-    create_texture_cube: function(_size: UInt16; _hasMips: Boolean; _numLayers: UInt16; _format: bgfx_texture_format_t; _flags: UInt64; _mem: Pbgfx_memory_t): bgfx_texture_handle_t; cdecl;
-    update_texture_2d: procedure(_handle: bgfx_texture_handle_t; _layer: UInt16; _mip: UInt8; _x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16; _mem: Pbgfx_memory_t; _pitch: UInt16); cdecl;
-    update_texture_3d: procedure(_handle: bgfx_texture_handle_t; _mip: UInt8; _x: UInt16; _y: UInt16; _z: UInt16; _width: UInt16; _height: UInt16; _depth: UInt16; _mem: Pbgfx_memory_t); cdecl;
-    update_texture_cube: procedure(_handle: bgfx_texture_handle_t; _layer: UInt16; _side: UInt8; _mip: UInt8; _x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16; _mem: Pbgfx_memory_t; _pitch: UInt16); cdecl;
+    create_texture_3d: function(_width: UInt16; _height: UInt16; _depth: UInt16; _hasMips: Boolean; _format: bgfx_texture_format_t; _flags: UInt64; const _mem: Pbgfx_memory_t): bgfx_texture_handle_t; cdecl;
+    create_texture_cube: function(_size: UInt16; _hasMips: Boolean; _numLayers: UInt16; _format: bgfx_texture_format_t; _flags: UInt64; const _mem: Pbgfx_memory_t): bgfx_texture_handle_t; cdecl;
+    update_texture_2d: procedure(_handle: bgfx_texture_handle_t; _layer: UInt16; _mip: UInt8; _x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16; const _mem: Pbgfx_memory_t; _pitch: UInt16); cdecl;
+    update_texture_3d: procedure(_handle: bgfx_texture_handle_t; _mip: UInt8; _x: UInt16; _y: UInt16; _z: UInt16; _width: UInt16; _height: UInt16; _depth: UInt16; const _mem: Pbgfx_memory_t); cdecl;
+    update_texture_cube: procedure(_handle: bgfx_texture_handle_t; _layer: UInt16; _side: UInt8; _mip: UInt8; _x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16; const _mem: Pbgfx_memory_t; _pitch: UInt16); cdecl;
     read_texture: function(_handle: bgfx_texture_handle_t; _data: Pointer; _mip: UInt8): UInt32; cdecl;
-    set_texture_name: procedure(_handle: bgfx_texture_handle_t; _name: PUTF8Char; _len: Int32); cdecl;
+    set_texture_name: procedure(_handle: bgfx_texture_handle_t; const _name: PUTF8Char; _len: Int32); cdecl;
     get_direct_access_ptr: function(_handle: bgfx_texture_handle_t): Pointer; cdecl;
     destroy_texture: procedure(_handle: bgfx_texture_handle_t); cdecl;
     create_frame_buffer: function(_width: UInt16; _height: UInt16; _format: bgfx_texture_format_t; _textureFlags: UInt64): bgfx_frame_buffer_handle_t; cdecl;
     create_frame_buffer_scaled: function(_ratio: bgfx_backbuffer_ratio_t; _format: bgfx_texture_format_t; _textureFlags: UInt64): bgfx_frame_buffer_handle_t; cdecl;
-    create_frame_buffer_from_handles: function(_num: UInt8; _handles: Pbgfx_texture_handle_t; _destroyTexture: Boolean): bgfx_frame_buffer_handle_t; cdecl;
-    create_frame_buffer_from_attachment: function(_num: UInt8; _attachment: Pbgfx_attachment_t; _destroyTexture: Boolean): bgfx_frame_buffer_handle_t; cdecl;
+    create_frame_buffer_from_handles: function(_num: UInt8; const _handles: Pbgfx_texture_handle_t; _destroyTexture: Boolean): bgfx_frame_buffer_handle_t; cdecl;
+    create_frame_buffer_from_attachment: function(_num: UInt8; const _attachment: Pbgfx_attachment_t; _destroyTexture: Boolean): bgfx_frame_buffer_handle_t; cdecl;
     create_frame_buffer_from_nwh: function(_nwh: Pointer; _width: UInt16; _height: UInt16; _format: bgfx_texture_format_t; _depthFormat: bgfx_texture_format_t): bgfx_frame_buffer_handle_t; cdecl;
-    set_frame_buffer_name: procedure(_handle: bgfx_frame_buffer_handle_t; _name: PUTF8Char; _len: Int32); cdecl;
+    set_frame_buffer_name: procedure(_handle: bgfx_frame_buffer_handle_t; const _name: PUTF8Char; _len: Int32); cdecl;
     get_texture: function(_handle: bgfx_frame_buffer_handle_t; _attachment: UInt8): bgfx_texture_handle_t; cdecl;
     destroy_frame_buffer: procedure(_handle: bgfx_frame_buffer_handle_t); cdecl;
-    create_uniform: function(_name: PUTF8Char; _type: bgfx_uniform_type_t; _num: UInt16): bgfx_uniform_handle_t; cdecl;
+    create_uniform: function(const _name: PUTF8Char; _type: bgfx_uniform_type_t; _num: UInt16): bgfx_uniform_handle_t; cdecl;
     get_uniform_info: procedure(_handle: bgfx_uniform_handle_t; _info: Pbgfx_uniform_info_t); cdecl;
     destroy_uniform: procedure(_handle: bgfx_uniform_handle_t); cdecl;
     create_occlusion_query: function(): bgfx_occlusion_query_handle_t; cdecl;
@@ -2079,7 +2091,7 @@ type
     destroy_occlusion_query: procedure(_handle: bgfx_occlusion_query_handle_t); cdecl;
     set_palette_color: procedure(_index: UInt8; _rgba: PSingle); cdecl;
     set_palette_color_rgba8: procedure(_index: UInt8; _rgba: UInt32); cdecl;
-    set_view_name: procedure(_id: bgfx_view_id_t; _name: PUTF8Char); cdecl;
+    set_view_name: procedure(_id: bgfx_view_id_t; const _name: PUTF8Char); cdecl;
     set_view_rect: procedure(_id: bgfx_view_id_t; _x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16); cdecl;
     set_view_rect_ratio: procedure(_id: bgfx_view_id_t; _x: UInt16; _y: UInt16; _ratio: bgfx_backbuffer_ratio_t); cdecl;
     set_view_scissor: procedure(_id: bgfx_view_id_t; _x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16); cdecl;
@@ -2087,108 +2099,112 @@ type
     set_view_clear_mrt: procedure(_id: bgfx_view_id_t; _flags: UInt16; _depth: Single; _stencil: UInt8; _c0: UInt8; _c1: UInt8; _c2: UInt8; _c3: UInt8; _c4: UInt8; _c5: UInt8; _c6: UInt8; _c7: UInt8); cdecl;
     set_view_mode: procedure(_id: bgfx_view_id_t; _mode: bgfx_view_mode_t); cdecl;
     set_view_frame_buffer: procedure(_id: bgfx_view_id_t; _handle: bgfx_frame_buffer_handle_t); cdecl;
-    set_view_transform: procedure(_id: bgfx_view_id_t; _view: Pointer; _proj: Pointer); cdecl;
-    set_view_order: procedure(_id: bgfx_view_id_t; _num: UInt16; _order: Pbgfx_view_id_t); cdecl;
+    set_view_transform: procedure(_id: bgfx_view_id_t; const _view: Pointer; const _proj: Pointer); cdecl;
+    set_view_order: procedure(_id: bgfx_view_id_t; _num: UInt16; const _order: Pbgfx_view_id_t); cdecl;
+    reset_view: procedure(_id: bgfx_view_id_t); cdecl;
     encoder_begin: function(_forThread: Boolean): Pbgfx_encoder_t; cdecl;
     encoder_end: procedure(_encoder: Pbgfx_encoder_t); cdecl;
-    encoder_set_marker: procedure(_this: Pbgfx_encoder_t; _marker: PUTF8Char); cdecl;
+    encoder_set_marker: procedure(_this: Pbgfx_encoder_t; const _marker: PUTF8Char); cdecl;
     encoder_set_state: procedure(_this: Pbgfx_encoder_t; _state: UInt64; _rgba: UInt32); cdecl;
     encoder_set_condition: procedure(_this: Pbgfx_encoder_t; _handle: bgfx_occlusion_query_handle_t; _visible: Boolean); cdecl;
     encoder_set_stencil: procedure(_this: Pbgfx_encoder_t; _fstencil: UInt32; _bstencil: UInt32); cdecl;
     encoder_set_scissor: function(_this: Pbgfx_encoder_t; _x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16): UInt16; cdecl;
     encoder_set_scissor_cached: procedure(_this: Pbgfx_encoder_t; _cache: UInt16); cdecl;
-    encoder_set_transform: function(_this: Pbgfx_encoder_t; _mtx: Pointer; _num: UInt16): UInt32; cdecl;
+    encoder_set_transform: function(_this: Pbgfx_encoder_t; const _mtx: Pointer; _num: UInt16): UInt32; cdecl;
     encoder_set_transform_cached: procedure(_this: Pbgfx_encoder_t; _cache: UInt32; _num: UInt16); cdecl;
     encoder_alloc_transform: function(_this: Pbgfx_encoder_t; _transform: Pbgfx_transform_t; _num: UInt16): UInt32; cdecl;
-    encoder_set_uniform: procedure(_this: Pbgfx_encoder_t; _handle: bgfx_uniform_handle_t; _value: Pointer; _num: UInt16); cdecl;
+    encoder_set_uniform: procedure(_this: Pbgfx_encoder_t; _handle: bgfx_uniform_handle_t; const _value: Pointer; _num: UInt16); cdecl;
     encoder_set_index_buffer: procedure(_this: Pbgfx_encoder_t; _handle: bgfx_index_buffer_handle_t; _firstIndex: UInt32; _numIndices: UInt32); cdecl;
     encoder_set_dynamic_index_buffer: procedure(_this: Pbgfx_encoder_t; _handle: bgfx_dynamic_index_buffer_handle_t; _firstIndex: UInt32; _numIndices: UInt32); cdecl;
-    encoder_set_transient_index_buffer: procedure(_this: Pbgfx_encoder_t; _tib: Pbgfx_transient_index_buffer_t; _firstIndex: UInt32; _numIndices: UInt32); cdecl;
-    encoder_set_vertex_buffer: procedure(_this: Pbgfx_encoder_t; _stream: UInt8; _handle: bgfx_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
-    encoder_set_dynamic_vertex_buffer: procedure(_this: Pbgfx_encoder_t; _stream: UInt8; _handle: bgfx_dynamic_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
-    encoder_set_transient_vertex_buffer: procedure(_this: Pbgfx_encoder_t; _stream: UInt8; _tvb: Pbgfx_transient_vertex_buffer_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
+    encoder_set_transient_index_buffer: procedure(_this: Pbgfx_encoder_t; const _tib: Pbgfx_transient_index_buffer_t; _firstIndex: UInt32; _numIndices: UInt32); cdecl;
+    encoder_set_vertex_buffer: procedure(_this: Pbgfx_encoder_t; _stream: UInt8; _handle: bgfx_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32); cdecl;
+    encoder_set_vertex_buffer_with_layout: procedure(_this: Pbgfx_encoder_t; _stream: UInt8; _handle: bgfx_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
+    encoder_set_dynamic_vertex_buffer: procedure(_this: Pbgfx_encoder_t; _stream: UInt8; _handle: bgfx_dynamic_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32); cdecl;
+    encoder_set_dynamic_vertex_buffer_with_layout: procedure(_this: Pbgfx_encoder_t; _stream: UInt8; _handle: bgfx_dynamic_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
+    encoder_set_transient_vertex_buffer: procedure(_this: Pbgfx_encoder_t; _stream: UInt8; const _tvb: Pbgfx_transient_vertex_buffer_t; _startVertex: UInt32; _numVertices: UInt32); cdecl;
+    encoder_set_transient_vertex_buffer_with_layout: procedure(_this: Pbgfx_encoder_t; _stream: UInt8; const _tvb: Pbgfx_transient_vertex_buffer_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
     encoder_set_vertex_count: procedure(_this: Pbgfx_encoder_t; _numVertices: UInt32); cdecl;
-    encoder_set_instance_data_buffer: procedure(_this: Pbgfx_encoder_t; _idb: Pbgfx_instance_data_buffer_t; _start: UInt32; _num: UInt32); cdecl;
+    encoder_set_instance_data_buffer: procedure(_this: Pbgfx_encoder_t; const _idb: Pbgfx_instance_data_buffer_t; _start: UInt32; _num: UInt32); cdecl;
     encoder_set_instance_data_from_vertex_buffer: procedure(_this: Pbgfx_encoder_t; _handle: bgfx_vertex_buffer_handle_t; _startVertex: UInt32; _num: UInt32); cdecl;
     encoder_set_instance_data_from_dynamic_vertex_buffer: procedure(_this: Pbgfx_encoder_t; _handle: bgfx_dynamic_vertex_buffer_handle_t; _startVertex: UInt32; _num: UInt32); cdecl;
     encoder_set_instance_count: procedure(_this: Pbgfx_encoder_t; _numInstances: UInt32); cdecl;
     encoder_set_texture: procedure(_this: Pbgfx_encoder_t; _stage: UInt8; _sampler: bgfx_uniform_handle_t; _handle: bgfx_texture_handle_t; _flags: UInt32); cdecl;
     encoder_touch: procedure(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t); cdecl;
-    encoder_submit: procedure(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _depth: UInt32; _preserveState: Boolean); cdecl;
-    encoder_submit_occlusion_query: procedure(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _occlusionQuery: bgfx_occlusion_query_handle_t; _depth: UInt32; _preserveState: Boolean); cdecl;
-    encoder_submit_indirect: procedure(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16; _depth: UInt32; _preserveState: Boolean); cdecl;
+    encoder_submit: procedure(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _depth: UInt32; _flags: UInt8); cdecl;
+    encoder_submit_occlusion_query: procedure(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _occlusionQuery: bgfx_occlusion_query_handle_t; _depth: UInt32; _flags: UInt8); cdecl;
+    encoder_submit_indirect: procedure(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16; _depth: UInt32; _flags: UInt8); cdecl;
     encoder_set_compute_index_buffer: procedure(_this: Pbgfx_encoder_t; _stage: UInt8; _handle: bgfx_index_buffer_handle_t; _access: bgfx_access_t); cdecl;
     encoder_set_compute_vertex_buffer: procedure(_this: Pbgfx_encoder_t; _stage: UInt8; _handle: bgfx_vertex_buffer_handle_t; _access: bgfx_access_t); cdecl;
     encoder_set_compute_dynamic_index_buffer: procedure(_this: Pbgfx_encoder_t; _stage: UInt8; _handle: bgfx_dynamic_index_buffer_handle_t; _access: bgfx_access_t); cdecl;
     encoder_set_compute_dynamic_vertex_buffer: procedure(_this: Pbgfx_encoder_t; _stage: UInt8; _handle: bgfx_dynamic_vertex_buffer_handle_t; _access: bgfx_access_t); cdecl;
     encoder_set_compute_indirect_buffer: procedure(_this: Pbgfx_encoder_t; _stage: UInt8; _handle: bgfx_indirect_buffer_handle_t; _access: bgfx_access_t); cdecl;
     encoder_set_image: procedure(_this: Pbgfx_encoder_t; _stage: UInt8; _handle: bgfx_texture_handle_t; _mip: UInt8; _access: bgfx_access_t; _format: bgfx_texture_format_t); cdecl;
-    encoder_dispatch: procedure(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _numX: UInt32; _numY: UInt32; _numZ: UInt32); cdecl;
-    encoder_dispatch_indirect: procedure(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16); cdecl;
+    encoder_dispatch: procedure(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _numX: UInt32; _numY: UInt32; _numZ: UInt32; _flags: UInt8); cdecl;
+    encoder_dispatch_indirect: procedure(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16; _flags: UInt8); cdecl;
     encoder_discard: procedure(_this: Pbgfx_encoder_t; _flags: UInt8); cdecl;
     encoder_blit: procedure(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _dst: bgfx_texture_handle_t; _dstMip: UInt8; _dstX: UInt16; _dstY: UInt16; _dstZ: UInt16; _src: bgfx_texture_handle_t; _srcMip: UInt8; _srcX: UInt16; _srcY: UInt16; _srcZ: UInt16; _width: UInt16; _height: UInt16; _depth: UInt16); cdecl;
-    request_screen_shot: procedure(_handle: bgfx_frame_buffer_handle_t; _filePath: PUTF8Char); cdecl;
+    request_screen_shot: procedure(_handle: bgfx_frame_buffer_handle_t; const _filePath: PUTF8Char); cdecl;
     render_frame: function(_msecs: Int32): bgfx_render_frame_t; cdecl;
-    set_platform_data: procedure(_data: Pbgfx_platform_data_t); cdecl;
+    set_platform_data: procedure(const _data: Pbgfx_platform_data_t); cdecl;
     get_internal_data: function(): Pbgfx_internal_data_t; cdecl;
     override_internal_texture_ptr: function(_handle: bgfx_texture_handle_t; _ptr: UIntPtr): UIntPtr; cdecl;
     override_internal_texture: function(_handle: bgfx_texture_handle_t; _width: UInt16; _height: UInt16; _numMips: UInt8; _format: bgfx_texture_format_t; _flags: UInt64): UIntPtr; cdecl;
-    set_marker: procedure(_marker: PUTF8Char); cdecl;
+    set_marker: procedure(const _marker: PUTF8Char); cdecl;
     set_state: procedure(_state: UInt64; _rgba: UInt32); cdecl;
     set_condition: procedure(_handle: bgfx_occlusion_query_handle_t; _visible: Boolean); cdecl;
     set_stencil: procedure(_fstencil: UInt32; _bstencil: UInt32); cdecl;
     set_scissor: function(_x: UInt16; _y: UInt16; _width: UInt16; _height: UInt16): UInt16; cdecl;
     set_scissor_cached: procedure(_cache: UInt16); cdecl;
-    set_transform: function(_mtx: Pointer; _num: UInt16): UInt32; cdecl;
+    set_transform: function(const _mtx: Pointer; _num: UInt16): UInt32; cdecl;
     set_transform_cached: procedure(_cache: UInt32; _num: UInt16); cdecl;
     alloc_transform: function(_transform: Pbgfx_transform_t; _num: UInt16): UInt32; cdecl;
-    set_uniform: procedure(_handle: bgfx_uniform_handle_t; _value: Pointer; _num: UInt16); cdecl;
+    set_uniform: procedure(_handle: bgfx_uniform_handle_t; const _value: Pointer; _num: UInt16); cdecl;
     set_index_buffer: procedure(_handle: bgfx_index_buffer_handle_t; _firstIndex: UInt32; _numIndices: UInt32); cdecl;
     set_dynamic_index_buffer: procedure(_handle: bgfx_dynamic_index_buffer_handle_t; _firstIndex: UInt32; _numIndices: UInt32); cdecl;
-    set_transient_index_buffer: procedure(_tib: Pbgfx_transient_index_buffer_t; _firstIndex: UInt32; _numIndices: UInt32); cdecl;
+    set_transient_index_buffer: procedure(const _tib: Pbgfx_transient_index_buffer_t; _firstIndex: UInt32; _numIndices: UInt32); cdecl;
     set_vertex_buffer: procedure(_stream: UInt8; _handle: bgfx_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32); cdecl;
+    set_vertex_buffer_with_layout: procedure(_stream: UInt8; _handle: bgfx_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
     set_dynamic_vertex_buffer: procedure(_stream: UInt8; _handle: bgfx_dynamic_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32); cdecl;
-    set_transient_vertex_buffer: procedure(_stream: UInt8; _tvb: Pbgfx_transient_vertex_buffer_t; _startVertex: UInt32; _numVertices: UInt32); cdecl;
+    set_dynamic_vertex_buffer_with_layout: procedure(_stream: UInt8; _handle: bgfx_dynamic_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
+    set_transient_vertex_buffer: procedure(_stream: UInt8; const _tvb: Pbgfx_transient_vertex_buffer_t; _startVertex: UInt32; _numVertices: UInt32); cdecl;
+    set_transient_vertex_buffer_with_layout: procedure(_stream: UInt8; const _tvb: Pbgfx_transient_vertex_buffer_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
     set_vertex_count: procedure(_numVertices: UInt32); cdecl;
-    set_instance_data_buffer: procedure(_idb: Pbgfx_instance_data_buffer_t; _start: UInt32; _num: UInt32); cdecl;
+    set_instance_data_buffer: procedure(const _idb: Pbgfx_instance_data_buffer_t; _start: UInt32; _num: UInt32); cdecl;
     set_instance_data_from_vertex_buffer: procedure(_handle: bgfx_vertex_buffer_handle_t; _startVertex: UInt32; _num: UInt32); cdecl;
     set_instance_data_from_dynamic_vertex_buffer: procedure(_handle: bgfx_dynamic_vertex_buffer_handle_t; _startVertex: UInt32; _num: UInt32); cdecl;
     set_instance_count: procedure(_numInstances: UInt32); cdecl;
     set_texture: procedure(_stage: UInt8; _sampler: bgfx_uniform_handle_t; _handle: bgfx_texture_handle_t; _flags: UInt32); cdecl;
     touch: procedure(_id: bgfx_view_id_t); cdecl;
-    submit: procedure(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _depth: UInt32; _preserveState: Boolean); cdecl;
-    submit_occlusion_query: procedure(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _occlusionQuery: bgfx_occlusion_query_handle_t; _depth: UInt32; _preserveState: Boolean); cdecl;
-    submit_indirect: procedure(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16; _depth: UInt32; _preserveState: Boolean); cdecl;
+    submit: procedure(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _depth: UInt32; _flags: UInt8); cdecl;
+    submit_occlusion_query: procedure(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _occlusionQuery: bgfx_occlusion_query_handle_t; _depth: UInt32; _flags: UInt8); cdecl;
+    submit_indirect: procedure(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16; _depth: UInt32; _flags: UInt8); cdecl;
     set_compute_index_buffer: procedure(_stage: UInt8; _handle: bgfx_index_buffer_handle_t; _access: bgfx_access_t); cdecl;
     set_compute_vertex_buffer: procedure(_stage: UInt8; _handle: bgfx_vertex_buffer_handle_t; _access: bgfx_access_t); cdecl;
     set_compute_dynamic_index_buffer: procedure(_stage: UInt8; _handle: bgfx_dynamic_index_buffer_handle_t; _access: bgfx_access_t); cdecl;
     set_compute_dynamic_vertex_buffer: procedure(_stage: UInt8; _handle: bgfx_dynamic_vertex_buffer_handle_t; _access: bgfx_access_t); cdecl;
     set_compute_indirect_buffer: procedure(_stage: UInt8; _handle: bgfx_indirect_buffer_handle_t; _access: bgfx_access_t); cdecl;
     set_image: procedure(_stage: UInt8; _handle: bgfx_texture_handle_t; _mip: UInt8; _access: bgfx_access_t; _format: bgfx_texture_format_t); cdecl;
-    dispatch: procedure(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _numX: UInt32; _numY: UInt32; _numZ: UInt32); cdecl;
-    dispatch_indirect: procedure(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16); cdecl;
+    dispatch: procedure(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _numX: UInt32; _numY: UInt32; _numZ: UInt32; _flags: UInt8); cdecl;
+    dispatch_indirect: procedure(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16; _flags: UInt8); cdecl;
     discard: procedure(_flags: UInt8); cdecl;
     blit: procedure(_id: bgfx_view_id_t; _dst: bgfx_texture_handle_t; _dstMip: UInt8; _dstX: UInt16; _dstY: UInt16; _dstZ: UInt16; _src: bgfx_texture_handle_t; _srcMip: UInt8; _srcX: UInt16; _srcY: UInt16; _srcZ: UInt16; _width: UInt16; _height: UInt16; _depth: UInt16); cdecl;
   end;
 
-  (* *)
-  bgfx_interface_vtbl_t = bgfx_interface_vtbl;
-  Pbgfx_interface_vtbl_t = ^bgfx_interface_vtbl_t;
-
-  (* *)
   PFN_BGFX_GET_INTERFACE = function(_version: UInt32): Pbgfx_interface_vtbl_t; cdecl;
 
 (* Init attachment.
    @param(_handle [in] Render target texture handle.)
    @param(_access [in] Access. See `Access::Enum`.)
-   @param(_layer [in] Cubemap side or depth layer/slice.)
+   @param(_layer [in] Cubemap side or depth layer/slice to use.)
+   @param(_numLayers [in] Number of texture layer/slice(s) in array to use.)
    @param(_mip [in] Mip level.)
    @param(_resolve [in] Resolve flags. See: `BGFX_RESOLVE_*`) *)
-procedure bgfx_attachment_init(_this: Pbgfx_attachment_t; _handle: bgfx_texture_handle_t; _access: bgfx_access_t; _layer: UInt16; _mip: UInt16; _resolve: UInt8); cdecl;
+procedure bgfx_attachment_init(_this: Pbgfx_attachment_t; _handle: bgfx_texture_handle_t; _access: bgfx_access_t; _layer: UInt16; _numLayers: UInt16; _mip: UInt16; _resolve: UInt8); cdecl;
   external BGFX_LIB_NAME name 'bgfx_attachment_init';
 
 (* Start VertexLayout.
-   @param(_rendererType [in]) *)
+   @param(_rendererType [in] Renderer backend type. See: `bgfx::RendererType`)
+   @returns(Returns itself.) *)
 function bgfx_vertex_layout_begin(_this: Pbgfx_vertex_layout_t; _rendererType: bgfx_renderer_type_t): Pbgfx_vertex_layout_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_vertex_layout_begin';
 
@@ -2204,7 +2220,8 @@ function bgfx_vertex_layout_begin(_this: Pbgfx_vertex_layout_t; _rendererType: b
      in range 0.0-1.0 in vertex shader.)
    @param(_asInt [in] Packaging rule for vertexPack, vertexUnpack, and
      vertexConvert for AttribType::Uint8 and AttribType::Int16.
-     Unpacking code must be implemented inside vertex shader.) *)
+     Unpacking code must be implemented inside vertex shader.)
+   @returns(Returns itself.) *)
 function bgfx_vertex_layout_add(_this: Pbgfx_vertex_layout_t; _attrib: bgfx_attrib_t; _num: UInt8; _type: bgfx_attrib_type_t; _normalized: Boolean; _asInt: Boolean): Pbgfx_vertex_layout_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_vertex_layout_add';
 
@@ -2217,13 +2234,15 @@ function bgfx_vertex_layout_add(_this: Pbgfx_vertex_layout_t; _attrib: bgfx_attr
 procedure bgfx_vertex_layout_decode(const _this: Pbgfx_vertex_layout_t; _attrib: bgfx_attrib_t; _num: PUInt8; _type: Pbgfx_attrib_type_t; _normalized: PBoolean; _asInt: PBoolean); cdecl;
   external BGFX_LIB_NAME name 'bgfx_vertex_layout_decode';
 
-(* Returns true if VertexLayout contains attribute.
-   @param(_attrib [in] Attribute semantics. See: `bgfx::Attrib`) *)
+(* Returns `true` if VertexLayout contains attribute.
+   @param(_attrib [in] Attribute semantics. See: `bgfx::Attrib`)
+   @returns(True if VertexLayout contains attribute.) *)
 function bgfx_vertex_layout_has(const _this: Pbgfx_vertex_layout_t; _attrib: bgfx_attrib_t): Boolean; cdecl;
   external BGFX_LIB_NAME name 'bgfx_vertex_layout_has';
 
 (* Skip `_num` bytes in vertex stream.
-   @param(_num [in]) *)
+   @param(_num [in] Number of bytes to skip.)
+   @returns(Returns itself.) *)
 function bgfx_vertex_layout_skip(_this: Pbgfx_vertex_layout_t; _num: UInt8): Pbgfx_vertex_layout_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_vertex_layout_skip';
 
@@ -2265,9 +2284,10 @@ procedure bgfx_vertex_convert(const _dstLayout: Pbgfx_vertex_layout_t; _dstData:
    @param(_layout [in] Vertex stream layout.)
    @param(_data [in] Vertex stream.)
    @param(_num [in] Number of vertices in vertex stream.)
+   @param(_index32 [in] Set to `true` if input indices are 32-bit.)
    @param(_epsilon [in] Error tolerance for vertex position comparison.)
    @returns(Number of unique vertices after vertex welding.) *)
-function bgfx_weld_vertices(_output: PUInt16; const _layout: Pbgfx_vertex_layout_t; const _data: Pointer; _num: UInt16; _epsilon: Single): UInt16; cdecl;
+function bgfx_weld_vertices(_output: Pointer; const _layout: Pbgfx_vertex_layout_t; const _data: Pointer; _num: UInt32; _index32: Boolean; _epsilon: Single): UInt32; cdecl;
   external BGFX_LIB_NAME name 'bgfx_weld_vertices';
 
 (* Convert index buffer for use with different primitive topologies.
@@ -2343,7 +2363,7 @@ procedure bgfx_shutdown(); cdecl;
      - `BGFX_RESET_CAPTURE` - Begin screen capture.
      - `BGFX_RESET_FLUSH_AFTER_RENDER` - Flush rendering after submitting to GPU.
      - `BGFX_RESET_FLIP_AFTER_RENDER` - This flag  specifies where flip
-     occurs. Default behavior is that flip occurs before rendering new
+     occurs. Default behaviour is that flip occurs before rendering new
      frame. This flag only has effect when `BGFX_CONFIG_MULTITHREADED=0`.
      - `BGFX_RESET_SRGB_BACKBUFFER` - Enable sRGB backbuffer.)
    @param(_format [in] Texture format. See: `TextureFormat::Enum`.) *)
@@ -2491,7 +2511,7 @@ function bgfx_create_index_buffer(const _mem: Pbgfx_memory_t; _flags: UInt16): b
    @param(_handle [in] Static index buffer handle.)
    @param(_name [in] Static index buffer name.)
    @param(_len [in] Static index buffer name length (if length is INT32_MAX, it's expected
-     that _name is zero terminated string.)) *)
+     that _name is zero terminated string.) *)
 procedure bgfx_set_index_buffer_name(_handle: bgfx_index_buffer_handle_t; const _name: PUTF8Char; _len: Int32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_index_buffer_name';
 
@@ -2531,7 +2551,7 @@ function bgfx_create_vertex_buffer(const _mem: Pbgfx_memory_t; const _layout: Pb
    @param(_handle [in] Static vertex buffer handle.)
    @param(_name [in] Static vertex buffer name.)
    @param(_len [in] Static vertex buffer name length (if length is INT32_MAX, it's expected
-     that _name is zero terminated string.)) *)
+     that _name is zero terminated string.) *)
 procedure bgfx_set_vertex_buffer_name(_handle: bgfx_vertex_buffer_handle_t; const _name: PUTF8Char; _len: Int32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_vertex_buffer_name';
 
@@ -2640,8 +2660,9 @@ procedure bgfx_destroy_dynamic_vertex_buffer(_handle: bgfx_dynamic_vertex_buffer
 
 (* Returns number of requested or maximum available indices.
    @param(_num [in] Number of required indices.)
+   @param(_index32 [in] Set to `true` if input indices will be 32-bit.)
    @returns(Number of requested or maximum available indices.) *)
-function bgfx_get_avail_transient_index_buffer(_num: UInt32): UInt32; cdecl;
+function bgfx_get_avail_transient_index_buffer(_num: UInt32; _index32: Boolean): UInt32; cdecl;
   external BGFX_LIB_NAME name 'bgfx_get_avail_transient_index_buffer';
 
 (* Returns number of requested or maximum available vertices.
@@ -2659,13 +2680,12 @@ function bgfx_get_avail_instance_data_buffer(_num: UInt32; _stride: UInt16): UIn
   external BGFX_LIB_NAME name 'bgfx_get_avail_instance_data_buffer';
 
 (* Allocate transient index buffer.
-
-   Only 16-bit index buffer is supported.
    @param(_tib [out] TransientIndexBuffer structure is filled and is valid
      for the duration of frame, and it can be reused for multiple draw
      calls.)
-   @param(_num [in] Number of indices to allocate.) *)
-procedure bgfx_alloc_transient_index_buffer(_tib: Pbgfx_transient_index_buffer_t; _num: UInt32); cdecl;
+   @param(_num [in] Number of indices to allocate.)
+   @param(_index32 [in] Set to `true` if input indices will be 32-bit.) *)
+procedure bgfx_alloc_transient_index_buffer(_tib: Pbgfx_transient_index_buffer_t; _num: UInt32; _index32: Boolean); cdecl;
   external BGFX_LIB_NAME name 'bgfx_alloc_transient_index_buffer';
 
 (* Allocate transient vertex buffer.
@@ -2680,8 +2700,6 @@ procedure bgfx_alloc_transient_vertex_buffer(_tvb: Pbgfx_transient_vertex_buffer
 (* Check for required space and allocate transient vertex and index
    buffers. If both space requirements are satisfied function returns
    true.
-
-   Only 16-bit index buffer is supported.
    @param(_tvb [out] TransientVertexBuffer structure is filled and is valid
      for the duration of frame, and it can be reused for multiple draw
      calls.)
@@ -2690,8 +2708,9 @@ procedure bgfx_alloc_transient_vertex_buffer(_tvb: Pbgfx_transient_vertex_buffer
    @param(_tib [out] TransientIndexBuffer structure is filled and is valid
      for the duration of frame, and it can be reused for multiple draw
      calls.)
-   @param(_numIndices [in] Number of indices to allocate.) *)
-function bgfx_alloc_transient_buffers(_tvb: Pbgfx_transient_vertex_buffer_t; const _layout: Pbgfx_vertex_layout_t; _numVertices: UInt32; _tib: Pbgfx_transient_index_buffer_t; _numIndices: UInt32): Boolean; cdecl;
+   @param(_numIndices [in] Number of indices to allocate.)
+   @param(_index32 [in] Set to `true` if input indices will be 32-bit.) *)
+function bgfx_alloc_transient_buffers(_tvb: Pbgfx_transient_vertex_buffer_t; const _layout: Pbgfx_vertex_layout_t; _numVertices: UInt32; _tib: Pbgfx_transient_index_buffer_t; _numIndices: UInt32; _index32: Boolean): Boolean; cdecl;
   external BGFX_LIB_NAME name 'bgfx_alloc_transient_buffers';
 
 (* Allocate instance data buffer.
@@ -2776,6 +2795,13 @@ procedure bgfx_destroy_program(_handle: bgfx_program_handle_t); cdecl;
    @returns(True if texture can be successfully created.) *)
 function bgfx_is_texture_valid(_depth: UInt16; _cubeMap: Boolean; _numLayers: UInt16; _format: bgfx_texture_format_t; _flags: UInt64): Boolean; cdecl;
   external BGFX_LIB_NAME name 'bgfx_is_texture_valid';
+
+(* Validate frame buffer parameters.
+   @param(_num [in] Number of attachments.)
+   @param(_attachment [in] Attachment texture info. See: `bgfx::Attachment`.)
+   @returns(True if frame buffer can be successfully created.) *)
+function bgfx_is_frame_buffer_valid(_num: UInt8; const _attachment: Pbgfx_attachment_t): Boolean; cdecl;
+  external BGFX_LIB_NAME name 'bgfx_is_frame_buffer_valid';
 
 (* Calculate amount of memory required for texture.
    @param(_info [out] Resulting texture info structure. See: `TextureInfo`.)
@@ -2959,7 +2985,7 @@ function bgfx_read_texture(_handle: bgfx_texture_handle_t; _data: Pointer; _mip:
    @param(_handle [in] Texture handle.)
    @param(_name [in] Texture name.)
    @param(_len [in] Texture name length (if length is INT32_MAX, it's expected
-     that _name is zero terminated string.)) *)
+     that _name is zero terminated string.) *)
 procedure bgfx_set_texture_name(_handle: bgfx_texture_handle_t; const _name: PUTF8Char; _len: Int32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_texture_name';
 
@@ -3020,7 +3046,7 @@ function bgfx_create_frame_buffer_from_handles(_num: UInt8; const _handles: Pbgf
 
 (* Create MRT frame buffer from texture handles with specific layer and
    mip level.
-   @param(_num [in] Number of attachements.)
+   @param(_num [in] Number of attachments.)
    @param(_attachment [in] Attachment texture info. See: `bgfx::Attachment`.)
    @param(_destroyTexture [in] If true, textures will be destroyed when
      frame buffer is destroyed.)
@@ -3046,7 +3072,7 @@ function bgfx_create_frame_buffer_from_nwh(_nwh: Pointer; _width: UInt16; _heigh
    @param(_handle [in] Frame buffer handle.)
    @param(_name [in] Frame buffer name.)
    @param(_len [in] Frame buffer name length (if length is INT32_MAX, it's expected
-     that _name is zero terminated string.)) *)
+     that _name is zero terminated string.) *)
 procedure bgfx_set_frame_buffer_name(_handle: bgfx_frame_buffer_handle_t; const _name: PUTF8Char; _len: Int32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_frame_buffer_name';
 
@@ -3068,22 +3094,22 @@ procedure bgfx_destroy_frame_buffer(_handle: bgfx_frame_buffer_handle_t); cdecl;
    return the same handle, but the handle reference count will be
    incremented. This means that the same number of `bgfx::destroyUniform`
    must be called to properly destroy the uniform.
-
    2. Predefined uniforms (declared in `bgfx_shader.sh`):
-   @unorderedList(
-     @item(`u_viewRect vec4(x, y, width, height)` - view rectangle for current view, in pixels.)
-     @item(`u_viewTexel vec4(1.0/width, 1.0/height, undef, undef)` - inverse width and height)
-     @item(`u_view mat4` - view matrix)
-     @item(`u_invView mat4` - inverted view matrix)
-     @item(`u_proj mat4` - projection matrix)
-     @item(`u_invProj mat4` - inverted projection matrix)
-     @item(`u_viewProj mat4` - concatenated view projection matrix)
-     @item(`u_invViewProj mat4` - concatenated inverted view projection matrix)
-     @item(`u_model mat4[BGFX_CONFIG_MAX_BONES]` - array of model matrices.)
-     @item(`u_modelView mat4` - concatenated model view matrix, only first model matrix from array is used.)
-     @item(`u_modelViewProj mat4` - concatenated model view projection matrix.)
-     @item(`u_alphaRef float` - alpha reference value for alpha test.)
-   )
+   - `u_viewRect vec4(x, y, width, height)` - view rectangle for current
+   view, in pixels.
+   - `u_viewTexel vec4(1.0/width, 1.0/height, undef, undef)` - inverse
+   width and height
+   - `u_view mat4` - view matrix
+   - `u_invView mat4` - inverted view matrix
+   - `u_proj mat4` - projection matrix
+   - `u_invProj mat4` - inverted projection matrix
+   - `u_viewProj mat4` - concatenated view projection matrix
+   - `u_invViewProj mat4` - concatenated inverted view projection matrix
+   - `u_model mat4[BGFX_CONFIG_MAX_BONES]` - array of model matrices.
+   - `u_modelView mat4` - concatenated model view matrix, only first
+   model matrix from array is used.
+   - `u_modelViewProj mat4` - concatenated model view projection matrix.
+   - `u_alphaRef float` - alpha reference value for alpha test.
    @param(_name [in] Uniform name in shader.)
    @param(_type [in] Type of uniform (See: `bgfx::UniformType`).)
    @param(_num [in] Number of elements in array.)
@@ -3235,6 +3261,11 @@ procedure bgfx_set_view_transform(_id: bgfx_view_id_t; const _view: Pointer; con
 procedure bgfx_set_view_order(_id: bgfx_view_id_t; _num: UInt16; const _order: Pbgfx_view_id_t); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_view_order';
 
+(* Reset all view settings to default.
+   @param(_id [in]) *)
+procedure bgfx_reset_view(_id: bgfx_view_id_t); cdecl;
+  external BGFX_LIB_NAME name 'bgfx_reset_view';
+
 (* Begin submitting draw calls from thread.
    @param(_forThread [in] Explicitly request an encoder for a worker thread.)
    @returns(Encoder.) *)
@@ -3365,28 +3396,50 @@ procedure bgfx_encoder_set_transient_index_buffer(_this: Pbgfx_encoder_t; const 
    @param(_stream [in] Vertex stream.)
    @param(_handle [in] Vertex buffer.)
    @param(_startVertex [in] First vertex to render.)
-   @param(_numVertices [in] Number of vertices to render.)
-   @param(_layoutHandle [in] Vertex layout for aliasing vertex buffer.) *)
-procedure bgfx_encoder_set_vertex_buffer(_this: Pbgfx_encoder_t; _stream: UInt8; _handle: bgfx_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
+   @param(_numVertices [in] Number of vertices to render.) *)
+procedure bgfx_encoder_set_vertex_buffer(_this: Pbgfx_encoder_t; _stream: UInt8; _handle: bgfx_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_set_vertex_buffer';
+
+(* Set vertex buffer for draw primitive.
+   @param(_stream [in] Vertex stream.)
+   @param(_handle [in] Vertex buffer.)
+   @param(_startVertex [in] First vertex to render.)
+   @param(_numVertices [in] Number of vertices to render.)
+   @param(_layoutHandle [in] Vertex layout for aliasing vertex buffer. If invalid
+     handle is used, vertex layout used for creation
+     of vertex buffer will be used.) *)
+procedure bgfx_encoder_set_vertex_buffer_with_layout(_this: Pbgfx_encoder_t; _stream: UInt8; _handle: bgfx_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
+  external BGFX_LIB_NAME name 'bgfx_encoder_set_vertex_buffer_with_layout';
 
 (* Set vertex buffer for draw primitive.
    @param(_stream [in] Vertex stream.)
    @param(_handle [in] Dynamic vertex buffer.)
    @param(_startVertex [in] First vertex to render.)
-   @param(_numVertices [in] Number of vertices to render.)
-   @param(_layoutHandle [in] Vertex layout for aliasing vertex buffer.) *)
-procedure bgfx_encoder_set_dynamic_vertex_buffer(_this: Pbgfx_encoder_t; _stream: UInt8; _handle: bgfx_dynamic_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
+   @param(_numVertices [in] Number of vertices to render.) *)
+procedure bgfx_encoder_set_dynamic_vertex_buffer(_this: Pbgfx_encoder_t; _stream: UInt8; _handle: bgfx_dynamic_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_set_dynamic_vertex_buffer';
+
+procedure bgfx_encoder_set_dynamic_vertex_buffer_with_layout(_this: Pbgfx_encoder_t; _stream: UInt8; _handle: bgfx_dynamic_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
+  external BGFX_LIB_NAME name 'bgfx_encoder_set_dynamic_vertex_buffer_with_layout';
+
+(* Set vertex buffer for draw primitive.
+   @param(_stream [in] Vertex stream.)
+   @param(_tvb [in] Transient vertex buffer.)
+   @param(_startVertex [in] First vertex to render.)
+   @param(_numVertices [in] Number of vertices to render.) *)
+procedure bgfx_encoder_set_transient_vertex_buffer(_this: Pbgfx_encoder_t; _stream: UInt8; const _tvb: Pbgfx_transient_vertex_buffer_t; _startVertex: UInt32; _numVertices: UInt32); cdecl;
+  external BGFX_LIB_NAME name 'bgfx_encoder_set_transient_vertex_buffer';
 
 (* Set vertex buffer for draw primitive.
    @param(_stream [in] Vertex stream.)
    @param(_tvb [in] Transient vertex buffer.)
    @param(_startVertex [in] First vertex to render.)
    @param(_numVertices [in] Number of vertices to render.)
-   @param(_layoutHandle [in] Vertex layout for aliasing vertex buffer.) *)
-procedure bgfx_encoder_set_transient_vertex_buffer(_this: Pbgfx_encoder_t; _stream: UInt8; const _tvb: Pbgfx_transient_vertex_buffer_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
-  external BGFX_LIB_NAME name 'bgfx_encoder_set_transient_vertex_buffer';
+   @param(_layoutHandle [in] Vertex layout for aliasing vertex buffer. If invalid
+     handle is used, vertex layout used for creation
+     of vertex buffer will be used.) *)
+procedure bgfx_encoder_set_transient_vertex_buffer_with_layout(_this: Pbgfx_encoder_t; _stream: UInt8; const _tvb: Pbgfx_transient_vertex_buffer_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
+  external BGFX_LIB_NAME name 'bgfx_encoder_set_transient_vertex_buffer_with_layout';
 
 (* Set number of vertices for auto generated vertices use in conjuction
    with gl_VertexID.
@@ -3440,7 +3493,9 @@ procedure bgfx_encoder_set_texture(_this: Pbgfx_encoder_t; _stage: UInt8; _sampl
   external BGFX_LIB_NAME name 'bgfx_encoder_set_texture';
 
 (* Submit an empty primitive for rendering. Uniforms and draw state
-   will be applied but no geometry will be submitted.
+   will be applied but no geometry will be submitted. Useful in cases
+   when no other draw/compute primitive is submitted to view, but it's
+   desired to execute clear view.
 
    These empty draw calls will sort before ordinary draw calls.
    @param(_id [in] View id.) *)
@@ -3451,8 +3506,8 @@ procedure bgfx_encoder_touch(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t); cdecl
    @param(_id [in] View id.)
    @param(_program [in] Program.)
    @param(_depth [in] Depth for sorting.)
-   @param(_preserveState [in] Preserve internal draw state for next draw call submit.) *)
-procedure bgfx_encoder_submit(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _depth: UInt32; _preserveState: Boolean); cdecl;
+   @param(_flags [in] Discard or preserve states. See `BGFX_DISCARD_*`.) *)
+procedure bgfx_encoder_submit(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _depth: UInt32; _flags: UInt8); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_submit';
 
 (* Submit primitive with occlusion query for rendering.
@@ -3460,8 +3515,8 @@ procedure bgfx_encoder_submit(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _prog
    @param(_program [in] Program.)
    @param(_occlusionQuery [in] Occlusion query.)
    @param(_depth [in] Depth for sorting.)
-   @param(_preserveState [in] Preserve internal draw state for next draw call submit.) *)
-procedure bgfx_encoder_submit_occlusion_query(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _occlusionQuery: bgfx_occlusion_query_handle_t; _depth: UInt32; _preserveState: Boolean); cdecl;
+   @param(_flags [in] Discard or preserve states. See `BGFX_DISCARD_*`.) *)
+procedure bgfx_encoder_submit_occlusion_query(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _occlusionQuery: bgfx_occlusion_query_handle_t; _depth: UInt32; _flags: UInt8); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_submit_occlusion_query';
 
 (* Submit primitive for rendering with index and instance data info from
@@ -3472,8 +3527,8 @@ procedure bgfx_encoder_submit_occlusion_query(_this: Pbgfx_encoder_t; _id: bgfx_
    @param(_start [in] First element in indirect buffer.)
    @param(_num [in] Number of dispatches.)
    @param(_depth [in] Depth for sorting.)
-   @param(_preserveState [in] Preserve internal draw state for next draw call submit.) *)
-procedure bgfx_encoder_submit_indirect(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16; _depth: UInt32; _preserveState: Boolean); cdecl;
+   @param(_flags [in] Discard or preserve states. See `BGFX_DISCARD_*`.) *)
+procedure bgfx_encoder_submit_indirect(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16; _depth: UInt32; _flags: UInt8); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_submit_indirect';
 
 (* Set compute index buffer.
@@ -3525,8 +3580,9 @@ procedure bgfx_encoder_set_image(_this: Pbgfx_encoder_t; _stage: UInt8; _handle:
    @param(_program [in] Compute program.)
    @param(_numX [in] Number of groups X.)
    @param(_numY [in] Number of groups Y.)
-   @param(_numZ [in] Number of groups Z.) *)
-procedure bgfx_encoder_dispatch(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _numX: UInt32; _numY: UInt32; _numZ: UInt32); cdecl;
+   @param(_numZ [in] Number of groups Z.)
+   @param(_flags [in] Discard or preserve states. See `BGFX_DISCARD_*`.) *)
+procedure bgfx_encoder_dispatch(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _numX: UInt32; _numY: UInt32; _numZ: UInt32; _flags: UInt8); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_dispatch';
 
 (* Dispatch compute indirect.
@@ -3534,12 +3590,13 @@ procedure bgfx_encoder_dispatch(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _pr
    @param(_program [in] Compute program.)
    @param(_indirectHandle [in] Indirect buffer.)
    @param(_start [in] First element in indirect buffer.)
-   @param(_num [in] Number of dispatches.) *)
-procedure bgfx_encoder_dispatch_indirect(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16); cdecl;
+   @param(_num [in] Number of dispatches.)
+   @param(_flags [in] Discard or preserve states. See `BGFX_DISCARD_*`.) *)
+procedure bgfx_encoder_dispatch_indirect(_this: Pbgfx_encoder_t; _id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16; _flags: UInt8); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_dispatch_indirect';
 
 (* Discard previously set state for draw or compute call.
-   @param(_flags [in] Draw/compute states to discard.) *)
+   @param(_flags [in] Discard or preserve states. See `BGFX_DISCARD_*`.) *)
 procedure bgfx_encoder_discard(_this: Pbgfx_encoder_t; _flags: UInt8); cdecl;
   external BGFX_LIB_NAME name 'bgfx_encoder_discard';
 
@@ -3776,6 +3833,17 @@ procedure bgfx_set_vertex_buffer(_stream: UInt8; _handle: bgfx_vertex_buffer_han
 
 (* Set vertex buffer for draw primitive.
    @param(_stream [in] Vertex stream.)
+   @param(_handle [in] Vertex buffer.)
+   @param(_startVertex [in] First vertex to render.)
+   @param(_numVertices [in] Number of vertices to render.)
+   @param(_layoutHandle [in] Vertex layout for aliasing vertex buffer. If invalid
+     handle is used, vertex layout used for creation
+     of vertex buffer will be used.) *)
+procedure bgfx_set_vertex_buffer_with_layout(_stream: UInt8; _handle: bgfx_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
+  external BGFX_LIB_NAME name 'bgfx_set_vertex_buffer_with_layout';
+
+(* Set vertex buffer for draw primitive.
+   @param(_stream [in] Vertex stream.)
    @param(_handle [in] Dynamic vertex buffer.)
    @param(_startVertex [in] First vertex to render.)
    @param(_numVertices [in] Number of vertices to render.) *)
@@ -3784,11 +3852,33 @@ procedure bgfx_set_dynamic_vertex_buffer(_stream: UInt8; _handle: bgfx_dynamic_v
 
 (* Set vertex buffer for draw primitive.
    @param(_stream [in] Vertex stream.)
+   @param(_handle [in] Dynamic vertex buffer.)
+   @param(_startVertex [in] First vertex to render.)
+   @param(_numVertices [in] Number of vertices to render.)
+   @param(_layoutHandle [in] Vertex layout for aliasing vertex buffer. If invalid
+     handle is used, vertex layout used for creation
+     of vertex buffer will be used.) *)
+procedure bgfx_set_dynamic_vertex_buffer_with_layout(_stream: UInt8; _handle: bgfx_dynamic_vertex_buffer_handle_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
+  external BGFX_LIB_NAME name 'bgfx_set_dynamic_vertex_buffer_with_layout';
+
+(* Set vertex buffer for draw primitive.
+   @param(_stream [in] Vertex stream.)
    @param(_tvb [in] Transient vertex buffer.)
    @param(_startVertex [in] First vertex to render.)
    @param(_numVertices [in] Number of vertices to render.) *)
 procedure bgfx_set_transient_vertex_buffer(_stream: UInt8; const _tvb: Pbgfx_transient_vertex_buffer_t; _startVertex: UInt32; _numVertices: UInt32); cdecl;
   external BGFX_LIB_NAME name 'bgfx_set_transient_vertex_buffer';
+
+(* Set vertex buffer for draw primitive.
+   @param(_stream [in] Vertex stream.)
+   @param(_tvb [in] Transient vertex buffer.)
+   @param(_startVertex [in] First vertex to render.)
+   @param(_numVertices [in] Number of vertices to render.)
+   @param(_layoutHandle [in] Vertex layout for aliasing vertex buffer. If invalid
+     handle is used, vertex layout used for creation
+     of vertex buffer will be used.) *)
+procedure bgfx_set_transient_vertex_buffer_with_layout(_stream: UInt8; const _tvb: Pbgfx_transient_vertex_buffer_t; _startVertex: UInt32; _numVertices: UInt32; _layoutHandle: bgfx_vertex_layout_handle_t); cdecl;
+  external BGFX_LIB_NAME name 'bgfx_set_transient_vertex_buffer_with_layout';
 
 (* Set number of vertices for auto generated vertices use in conjuction
    with gl_VertexID.
@@ -3853,8 +3943,8 @@ procedure bgfx_touch(_id: bgfx_view_id_t); cdecl;
    @param(_id [in] View id.)
    @param(_program [in] Program.)
    @param(_depth [in] Depth for sorting.)
-   @param(_preserveState [in] Preserve internal draw state for next draw call submit.) *)
-procedure bgfx_submit(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _depth: UInt32; _preserveState: Boolean); cdecl;
+   @param(_flags [in] Which states to discard for next draw. See `BGFX_DISCARD_*`.) *)
+procedure bgfx_submit(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _depth: UInt32; _flags: UInt8); cdecl;
   external BGFX_LIB_NAME name 'bgfx_submit';
 
 (* Submit primitive with occlusion query for rendering.
@@ -3862,8 +3952,8 @@ procedure bgfx_submit(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _dep
    @param(_program [in] Program.)
    @param(_occlusionQuery [in] Occlusion query.)
    @param(_depth [in] Depth for sorting.)
-   @param(_preserveState [in] Preserve internal draw state for next draw call submit.) *)
-procedure bgfx_submit_occlusion_query(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _occlusionQuery: bgfx_occlusion_query_handle_t; _depth: UInt32; _preserveState: Boolean); cdecl;
+   @param(_flags [in] Which states to discard for next draw. See `BGFX_DISCARD_*`.) *)
+procedure bgfx_submit_occlusion_query(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _occlusionQuery: bgfx_occlusion_query_handle_t; _depth: UInt32; _flags: UInt8); cdecl;
   external BGFX_LIB_NAME name 'bgfx_submit_occlusion_query';
 
 (* Submit primitive for rendering with index and instance data info from
@@ -3874,8 +3964,8 @@ procedure bgfx_submit_occlusion_query(_id: bgfx_view_id_t; _program: bgfx_progra
    @param(_start [in] First element in indirect buffer.)
    @param(_num [in] Number of dispatches.)
    @param(_depth [in] Depth for sorting.)
-   @param(_preserveState [in] Preserve internal draw state for next draw call submit.) *)
-procedure bgfx_submit_indirect(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16; _depth: UInt32; _preserveState: Boolean); cdecl;
+   @param(_flags [in] Which states to discard for next draw. See `BGFX_DISCARD_*`.) *)
+procedure bgfx_submit_indirect(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16; _depth: UInt32; _flags: UInt8); cdecl;
   external BGFX_LIB_NAME name 'bgfx_submit_indirect';
 
 (* Set compute index buffer.
@@ -3927,8 +4017,9 @@ procedure bgfx_set_image(_stage: UInt8; _handle: bgfx_texture_handle_t; _mip: UI
    @param(_program [in] Compute program.)
    @param(_numX [in] Number of groups X.)
    @param(_numY [in] Number of groups Y.)
-   @param(_numZ [in] Number of groups Z.) *)
-procedure bgfx_dispatch(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _numX: UInt32; _numY: UInt32; _numZ: UInt32); cdecl;
+   @param(_numZ [in] Number of groups Z.)
+   @param(_flags [in] Discard or preserve states. See `BGFX_DISCARD_*`.) *)
+procedure bgfx_dispatch(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _numX: UInt32; _numY: UInt32; _numZ: UInt32; _flags: UInt8); cdecl;
   external BGFX_LIB_NAME name 'bgfx_dispatch';
 
 (* Dispatch compute indirect.
@@ -3936,8 +4027,9 @@ procedure bgfx_dispatch(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _n
    @param(_program [in] Compute program.)
    @param(_indirectHandle [in] Indirect buffer.)
    @param(_start [in] First element in indirect buffer.)
-   @param(_num [in] Number of dispatches.) *)
-procedure bgfx_dispatch_indirect(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16); cdecl;
+   @param(_num [in] Number of dispatches.)
+   @param(_flags [in] Discard or preserve states. See `BGFX_DISCARD_*`.) *)
+procedure bgfx_dispatch_indirect(_id: bgfx_view_id_t; _program: bgfx_program_handle_t; _indirectHandle: bgfx_indirect_buffer_handle_t; _start: UInt16; _num: UInt16; _flags: UInt8); cdecl;
   external BGFX_LIB_NAME name 'bgfx_dispatch_indirect';
 
 (* Discard previously set state for draw or compute call.
@@ -3972,7 +4064,6 @@ procedure bgfx_discard(_flags: UInt8); cdecl;
 procedure bgfx_blit(_id: bgfx_view_id_t; _dst: bgfx_texture_handle_t; _dstMip: UInt8; _dstX: UInt16; _dstY: UInt16; _dstZ: UInt16; _src: bgfx_texture_handle_t; _srcMip: UInt8; _srcX: UInt16; _srcY: UInt16; _srcZ: UInt16; _width: UInt16; _height: UInt16; _depth: UInt16); cdecl;
   external BGFX_LIB_NAME name 'bgfx_blit';
 
-(* *)
 function bgfx_get_interface(_version: UInt32): Pbgfx_interface_vtbl_t; cdecl;
   external BGFX_LIB_NAME name 'bgfx_get_interface';
 
