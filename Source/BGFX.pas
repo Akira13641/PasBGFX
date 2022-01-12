@@ -3095,21 +3095,20 @@ procedure bgfx_destroy_frame_buffer(_handle: bgfx_frame_buffer_handle_t); cdecl;
    incremented. This means that the same number of `bgfx::destroyUniform`
    must be called to properly destroy the uniform.
    2. Predefined uniforms (declared in `bgfx_shader.sh`):
-   - `u_viewRect vec4(x, y, width, height)` - view rectangle for current
-   view, in pixels.
-   - `u_viewTexel vec4(1.0/width, 1.0/height, undef, undef)` - inverse
-   width and height
-   - `u_view mat4` - view matrix
-   - `u_invView mat4` - inverted view matrix
-   - `u_proj mat4` - projection matrix
-   - `u_invProj mat4` - inverted projection matrix
-   - `u_viewProj mat4` - concatenated view projection matrix
-   - `u_invViewProj mat4` - concatenated inverted view projection matrix
-   - `u_model mat4[BGFX_CONFIG_MAX_BONES]` - array of model matrices.
-   - `u_modelView mat4` - concatenated model view matrix, only first
-   model matrix from array is used.
-   - `u_modelViewProj mat4` - concatenated model view projection matrix.
-   - `u_alphaRef float` - alpha reference value for alpha test.
+   @unorderedList(
+     @item(`u_viewRect vec4(x, y, width, height)` - view rectangle for current view, in pixels.)
+     @item(`u_viewTexel vec4(1.0/width, 1.0/height, undef, undef)` - inverse width and height)
+     @item(`u_view mat4` - view matrix)
+     @item(`u_invView mat4` - inverted view matrix)
+     @item(`u_proj mat4` - projection matrix)
+     @item(`u_invProj mat4` - inverted projection matrix)
+     @item(`u_viewProj mat4` - concatenated view projection matrix)
+     @item(`u_invViewProj mat4` - concatenated inverted view projection matrix)
+     @item(`u_model mat4[BGFX_CONFIG_MAX_BONES]` - array of model matrices.)
+     @item(`u_modelView mat4` - concatenated model view matrix, only first model matrix from array is used.)
+     @item(`u_modelViewProj mat4` - concatenated model view projection matrix.)
+     @item(`u_alphaRef float` - alpha reference value for alpha test.)
+   )
    @param(_name [in] Uniform name in shader.)
    @param(_type [in] Type of uniform (See: `bgfx::UniformType`).)
    @param(_num [in] Number of elements in array.)
