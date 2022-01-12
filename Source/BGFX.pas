@@ -643,8 +643,6 @@ const
 
 type
   // Forward declarations
-  PUInt8 = ^UInt8;
-  PInt32 = ^Int32;
   Pbgfx_encoder_s = Pointer;
   PPbgfx_encoder_s = ^Pbgfx_encoder_s;
   Pbgfx_allocator_interface_s = ^bgfx_allocator_interface_s;
